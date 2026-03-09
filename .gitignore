@@ -24,10 +24,13 @@ M5 /Lecture Material/
 M6/Lab Material/
 
 # Pre-requisites
-Prerequisites/
+# Prerequisites/
 
 # Session Plan
 Session Plan/
+
+# training_env
+training_env/
 
 # Ignore environment variables (passwords/API keys)
 .env

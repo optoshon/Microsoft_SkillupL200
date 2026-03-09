@@ -1,0 +1,65 @@
+# Core ML & Deep Learning
+torch==2.1.2
+torchvision==0.16.2
+torchaudio==2.1.2
+transformers==4.39.3
+peft==0.9.0
+accelerate==0.27.2
+bitsandbytes==0.42.0
+datasets==2.16.1
+
+# Numerical & Data Processing
+numpy==1.26.4
+pandas>=2.1.0
+pyarrow==12.0.1
+fsspec==2023.10.0
+
+# Model Optimization & Export
+onnx
+onnxruntime
+quantize-dynamic
+
+# LLM & API Integration
+openai==1.37.1
+python-dotenv==1.0.1
+requests>=2.31.0
+
+# LangChain Ecosystem
+langchain==0.2.14
+langchain-core==0.2.41
+langchain-openai==0.1.20
+langchain-community==0.2.12
+langchain-experimental>=0.0.34
+langchain-text-splitters>=0.0.1
+langchain-chroma
+
+# Vector Stores & Embeddings
+sentence-transformers>=2.5.1
+faiss-cpu>=1.7.4
+chromadb
+
+# Document Processing
+pypdf>=4.0.0
+docx2txt>=0.8
+python-docx
+docling
+docling-core
+
+# Text Processing & Search
+rank-bm25
+tiktoken==0.7.0
+nltk
+easyocr
+
+# Utilities & Tools
+matplotlib
+psutil
+urllib3
+botocore
+
+# Jupyter & Notebook Support
+ipykernel==6.29.5
+notebook==6.5.7
+
+# Type Hints & Validation
+pydantic==2.7.4
