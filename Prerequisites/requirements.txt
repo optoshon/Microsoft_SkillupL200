@@ -11,13 +11,14 @@ datasets==2.16.1
 # Numerical & Data Processing
 numpy==1.26.4
 pandas>=2.1.0
-pyarrow==12.0.1
+pyarrow==14.0.2
 fsspec==2023.10.0
 
 # Model Optimization & Export
-onnx
-onnxruntime
-quantize-dynamic
+onnx==1.16.1
+onnxruntime==1.18.0
+optimum
+
 
 # LLM & API Integration
 openai==1.37.1
@@ -31,12 +32,12 @@ langchain-openai==0.1.20
 langchain-community==0.2.12
 langchain-experimental>=0.0.34
 langchain-text-splitters>=0.0.1
-langchain-chroma
+langchain-chroma>=0.1.2
 
 # Vector Stores & Embeddings
 sentence-transformers>=2.5.1
-faiss-cpu>=1.7.4
-chromadb
+faiss-cpu==1.7.4
+chromadb==0.5.5
 
 # Document Processing
 pypdf>=4.0.0
@@ -59,7 +60,7 @@ botocore
 
 # Jupyter & Notebook Support
 ipykernel==6.29.5
-notebook==6.5.7
+notebook>=7.0
 
 # Type Hints & Validation
 pydantic==2.7.4
