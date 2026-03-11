@@ -39,3 +39,6 @@ training_env/
 # Ignore environment variables (passwords/API keys)
 .env
 
+# And git ignore itself
+.gitignore
+
