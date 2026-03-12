@@ -1,29 +1,25 @@
 # Core ML & Deep Learning
-torch==2.1.2
-torchvision==0.16.2
-torchaudio==2.1.2
-transformers==4.39.3
-peft==0.9.0
-accelerate==0.27.2
-bitsandbytes==0.42.0
-datasets==2.16.1
+torch
+torchvision
+torchaudio
+transformers
+peft
+accelerate
+bitsandbytes
+datasets
 
 # Numerical & Data Processing
-numpy==1.26.4
+numpy
 pandas>=2.1.0
-pyarrow==14.0.2
-fsspec==2023.10.0
+fsspec
 
 # Model Optimization & Export
-onnx==1.16.1
-onnxruntime==1.18.0
-optimum
 
 
 # LLM & API Integration
-openai==1.37.1
-python-dotenv==1.0.1
-requests>=2.31.0
+openai
+python-dotenv
+requests
 
 # LangChain Ecosystem
 langchain==0.2.14
@@ -32,12 +28,9 @@ langchain-openai==0.1.20
 langchain-community==0.2.12
 langchain-experimental>=0.0.34
 langchain-text-splitters>=0.0.1
-langchain-chroma>=0.1.2
 
 # Vector Stores & Embeddings
 sentence-transformers>=2.5.1
-faiss-cpu==1.7.4
-chromadb==0.5.5
 
 # Document Processing
 pypdf>=4.0.0
@@ -60,7 +53,6 @@ botocore
 
 # Jupyter & Notebook Support
 ipykernel==6.29.5
-notebook>=7.0
 
 # Type Hints & Validation
 pydantic==2.7.4

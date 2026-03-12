@@ -16,7 +16,6 @@
 
 
 # %% [python]
-
 # SETUP: Install required packages (uncomment and run if needed)
 from __future__ import annotations
 from pathlib import Path

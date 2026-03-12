@@ -33,8 +33,10 @@ Prerequisites/huggingface_TheBlokeTinyLlam.txt
 # Session Plan
 Session Plan/
 
-# training_env
+# env
 training_env/
+myenv310/
+
 
 # Ignore environment variables (passwords/API keys)
 .env

@@ -4,21 +4,17 @@
 # Run each section independently in VSCode to see RAG in action
 # ============================================================
 
-
 # %% [python]
-
 # SETUP: Uncomment and run the line below to install required packages
-# pip install torch transformers sentence-transformers langchain-community langchain langchain-text-splitters python-dotenv
-
 from pathlib import Path
-
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 from sentence_transformers import SentenceTransformer
-
 from langchain_community.document_loaders import PyPDFLoader, CSVLoader, Docx2txtLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
+!pip install torch transformers sentence-transformers langchain-community langchain langchain-text-splitters python-dotenv
+print("done")
 
 
 # ============================================================

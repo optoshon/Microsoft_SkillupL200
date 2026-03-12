@@ -4,7 +4,7 @@ import venv
 import sys
 from pathlib import Path
 
-ENV_NAME = "training_env"
+ENV_NAME = "myenv310"
 PYTHON_VERSION = "3.12"  # Force Python 3.12
 
 PACKAGES = [
