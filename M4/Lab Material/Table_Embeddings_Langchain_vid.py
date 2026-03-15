@@ -1,20 +1,64 @@
-# Table_Embeddings_Langchain.py
-# ------------------------------------------------------------
-# Purpose:
-#   Load Docling-extracted tables (CSV files) from docling_output/
-#   Create table-aware chunks (row groups)
-#   Embed (Azure OpenAI from .env) and persist into Chroma
+# Table_Embeddings_Langchain_vid.py
+# ============================================================================
+# MODULE 2: TABLE INTELLIGENCE ENGINE
+# ============================================================================
 #
-# Run:
+# PURPOSE:
+#   Load CSV tables extracted by Docling (Module 1)
+#   Apply intelligent row-based chunking with overlap
+#   Convert to markdown/CSV format and create embeddings
+#   Store in Chroma vector database for semantic search
+#
+# WHAT IT DOES:
+#   1) Reads CSV files from docling_output/*/tables/
+#   2) Chunks tables by row groups with intelligent overlap
+#   3) Maintains table context (headers, structure)
+#   4) Embeds each chunk using Azure OpenAI embeddings
+#   5) Stores in Chroma vector database
+#
+# INPUT REQUIRED:
+#   - docling_output/*/tables/*.csv (from Module 1: Read_File_Docling.py)
+#   - .env file with Azure OpenAI embeddings deployment
+#
+# OUTPUT CREATED:
+#   - vector_db_table_chroma/ (Chroma database with embeddings)
+#   - table_ingest_manifest.json (metadata about ingested tables)
+#
+# RUNTIME: 15-60 seconds (depends on table size and count)
+#
+# PREREQUISITE:
+#   Run Module 1 (Read_File_Docling.py) BEFORE this script
+#
+# ============================================================================
+# SETUP INSTRUCTIONS
+# ============================================================================
+#
+# Step 1: ACTIVATE PYTHON ENVIRONMENT
+#   conda activate multimodal_rag
+#   # OR
+#   source myenv310/bin/activate  # (macOS/Linux)
+#   myenv310\Scripts\activate      # (Windows)
+#
+# Step 2: INSTALL DEPENDENCIES
+#   If you get import errors, uncomment and run:
+
+# !pip install python-dotenv pandas langchain-core langchain-openai chromadb langchain-chroma
+# OR for full requirements:
+# !pip install -r requirements.txt
+
+# Step 3: ENSURE MODULE 1 COMPLETED
+#   Run: python Read_File_Docling.py
+#   Verify: Check that docling_output/ folder exists with extracted tables
+#
+# Step 4: CONFIGURE PATHS & AZURE CREDENTIALS
+#   - Search for "PUT YOUR PATH HERE" below
+#   - Create/update .env file with Azure OpenAI credentials
+#   - Verify AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT deployment name
+#
+# Step 5: RUN THE SCRIPT
 #   python Table_Embeddings_Langchain_vid.py
 #
-# Requires:
-#   - docling_output/ produced by Read_File_Docling.py
-#   - .env with Azure OpenAI embeddings vars (same as Text_Embeddings_Langchain.py)
-#
-# Install:
-#   pip install python-dotenv pandas langchain-core langchain-openai chromadb langchain-chroma
-# ------------------------------------------------------------
+# ============================================================================
 
 from __future__ import annotations
 
@@ -38,8 +82,12 @@ from langchain_chroma import Chroma
 # CONFIG (edit only here)
 # =========================
 
-DOCLING_OUTPUT_DIR = Path("docling_output")        # same as in your scripts
-PERSIST_DIR = Path("vector_db_table_chroma")       # separate DB dir for tables
+# PUT YOUR PATH HERE: Where Module 1 (Read_File_Docling.py) saved extracted tables
+DOCLING_OUTPUT_DIR = Path(r"C:\Users\shonr\OneDrive - Tekframeworks\Training\Microsoft\Microsoft_SkillupL200\M4\Lab Material\docling_output")
+
+# PUT YOUR PATH HERE: Where to save Chroma vector database for tables (separate from text/image DBs)
+PERSIST_DIR = Path(r"C:\Users\shonr\OneDrive - Tekframeworks\Training\Microsoft\Microsoft_SkillupL200\M4\Lab Material\vector_db_table_chroma")
+
 COLLECTION_NAME = "table_chunks_v1"
 
 # Table chunking strategy: group N rows per chunk, with overlap rows
@@ -72,7 +120,8 @@ def _stable_id(*parts: str) -> str:
 
 
 def _require_env() -> Dict[str, str]:
-    load_dotenv(dotenv_path=Path(".env"), override=False)
+    # PUT YOUR PATH HERE: Location of .env file with Azure OpenAI credentials
+    load_dotenv(dotenv_path=Path(r"C:\Users\shonr\OneDrive - Tekframeworks\Secret_keys\.env"), override=False)
 
     required = [
         "AZURE_OPENAI_ENDPOINT",
@@ -93,7 +142,6 @@ def _require_env() -> Dict[str, str]:
         "AZURE_OPENAI_API_VERSION": os.environ["AZURE_OPENAI_API_VERSION"],
         "AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT": os.environ["AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT"],
     }
-
 
 def find_all_table_csvs(docling_output_dir: Path) -> List[Path]:
     # Expected: docling_output/<doc_id>/tables/table_001.csv

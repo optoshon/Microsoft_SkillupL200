@@ -1,14 +1,89 @@
 # Multimodal_Ensemble_Retriever_Enterprise.py
-# ------------------------------------------------------------
-# Enterprise-grade upgrades on top of your working Multimodal_Ensemble_Retriever.py:
-# 1) Human-readable chunk visualization (text / table / image VLM+OCR)
-# 2) Essential logging during query (timings, counts, IDs, scores)
-# 3) Deduplication routine (deterministic)
-# 4) Optional reranking routine (CrossEncoder via sentence-transformers)
-# 5) Cost placeholders + per-stage cost logging (no assumptions / no silent fallbacks)
-# 6) Proper output artifacts per query run (CSV/TXT/JSON)
-# 7) Preserves your existing pipeline contracts (same env vars, same DBs/collections)
-# ------------------------------------------------------------
+# ============================================================================
+# MODULE 5: ENTERPRISE MULTIMODAL RETRIEVER
+# ============================================================================
+#
+# PURPOSE:
+#   Query all 3 vector databases (text, tables, images)
+#   Return top results per modality and merge intelligently
+#   Optional cross-encoder reranking for final ranking
+#   Send ranked context to LLM for answer generation
+#   Log everything for audit, debugging, and cost tracking
+#
+# WHAT IT DOES:
+#   1) Queries all vector databases (text, table, image) in parallel
+#   2) Retrieves top-K results per modality
+#   3) Deduplicates results (deterministic fingerprinting)
+#   4) Optional: Reranks using cross-encoder (improves answer quality)
+#   5) Selects final context and sends to LLM (gpt-4o)
+#   6) Generates structured answer with traceability
+#   7) Saves artifacts: answer.txt, context_blocks.csv, query_timeline.json
+#
+# INPUT REQUIRED:
+#   - vector_db_text_chroma/ (from Module 3)
+#   - vector_db_table_chroma/ (from Module 2)
+#   - vector_db_image_vlm_chroma/ (from Module 4)
+#   - .env with all Azure OpenAI deployments
+#
+# OUTPUT CREATED:
+#   - outputs/run_YYYYMMDD_HHMMSS/
+#     ├── answer.txt (final LLM-generated answer)
+#     ├── context_blocks.csv (all retrieved chunks with scores)
+#     ├── query_timeline.json (per-stage timings + costs)
+#     └── manifest.json (metadata about the run)
+#
+# RUNTIME: 10-30 seconds per query (depends on LLM response time)
+#
+# PREREQUISITES:
+#   Run Modules 1-4 BEFORE this script:
+#   1. python Read_File_Docling.py
+#   2. python Table_Embeddings_Langchain_vid.py
+#   3. python Text_Embeddings_Langchain.py
+#   4. python Image_VLM_Embeddings_Langchain_vid.py
+#
+# ============================================================================
+# SETUP INSTRUCTIONS
+# ============================================================================
+#
+# Step 1: ACTIVATE PYTHON ENVIRONMENT
+#   conda activate multimodal_rag
+#   # OR
+#   source myenv310/bin/activate  # (macOS/Linux)
+#   myenv310\Scripts\activate      # (Windows)
+#
+# Step 2: INSTALL DEPENDENCIES
+#   If you get import errors, uncomment and run:
+
+# !pip install python-dotenv langchain-openai langchain-chroma langchain-core sentence-transformers
+# OR for full requirements:
+# !pip install -r requirements.txt
+
+# Step 3: ENSURE MODULES 1-4 COMPLETED
+#   Run all modules in order:
+#   python Read_File_Docling.py
+#   python Table_Embeddings_Langchain_vid.py
+#   python Text_Embeddings_Langchain.py
+#   python Image_VLM_Embeddings_Langchain_vid.py
+#
+#   Verify: Check that these folders exist:
+#   - vector_db_text_chroma/
+#   - vector_db_table_chroma/
+#   - vector_db_image_vlm_chroma/
+#
+# Step 4: CONFIGURE PATHS & AZURE CREDENTIALS
+#   - Search for "PUT YOUR PATH HERE" below
+#   - Create/update .env file with Azure OpenAI credentials
+#   - Verify all deployment names match Azure resource
+#
+# Step 5: RUN THE SCRIPT (interactive query loop)
+#   python Multimodal_Ensemble_Retriever_Enterprise.py
+#
+# Step 6: ENTER QUERIES
+#   When prompted, type your question (e.g., "What is the leave policy?")
+#   The system will retrieve relevant content and generate an answer
+#   Results saved to outputs/run_YYYYMMDD_HHMMSS/ for audit
+#
+# ============================================================================
 
 from __future__ import annotations
 
@@ -33,26 +108,30 @@ from langchain_core.documents import Document
 # ========================
 # CONFIG (keep aligned with your existing project)
 # ========================
-TEXT_DB_DIR   = Path("vector_db_text_chroma")
-TABLE_DB_DIR  = Path("vector_db_table_chroma")
-OCR_DB_DIR    = Path("vector_db_image_ocr_chroma")
-VLM_DB_DIR    = Path("vector_db_image_vlm_chroma")
+
+# PUT YOUR PATH HERE: Vector database folders (from Modules 2-4)
+# These should match the PERSIST_DIR paths from Table/Text/Image embedding scripts
+TEXT_DB_DIR   = Path("vector_db_text_chroma")      # From Module 3: Text_Embeddings_Langchain.py
+TABLE_DB_DIR  = Path("vector_db_table_chroma")     # From Module 2: Table_Embeddings_Langchain_vid.py
+VLM_DB_DIR    = Path("vector_db_image_vlm_chroma") # From Module 4: Image_VLM_Embeddings_Langchain_vid.py
 
 TEXT_COLLECTION  = "text_chunks_v1"
 TABLE_COLLECTION = "table_chunks_v1"
-OCR_COLLECTION   = "image_ocr_chunks_v1"
 VLM_COLLECTION   = "image_vlm_chunks_v1"
 
-TOP_K_PER_MODALITY = 4
-FINAL_CONTEXT_K = 7
+# Retrieval parameters
+TOP_K_PER_MODALITY = 4  # How many results to retrieve per modality (text, table, image)
+FINAL_CONTEXT_K = 7     # Final number of chunks to send to LLM
 
+# PUT YOUR PATH HERE: Where to save query outputs and results
 OUTPUT_BASE_DIR = Path("outputs")
 
-ENABLE_DEDUPE = True
+# Deduplication and reranking
+ENABLE_DEDUPE = True    # Remove duplicate/near-duplicate results
 
 # Reranking is OFF by default (so you don't change baseline behavior unless you choose to)
-ENABLE_RERANK = True
-RERANK_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+ENABLE_RERANK = True    # Optional: Use cross-encoder for more intelligent ranking
+RERANK_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"  # Cross-encoder model
 RERANK_TOP_K = FINAL_CONTEXT_K
 # ========================
 
@@ -183,6 +262,7 @@ def write_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
 # ENV
 # ========================
 def require_env() -> None:
+    # PUT YOUR PATH HERE: Location of .env file with Azure OpenAI credentials
     load_dotenv()
     for k in [
         "AZURE_OPENAI_ENDPOINT",

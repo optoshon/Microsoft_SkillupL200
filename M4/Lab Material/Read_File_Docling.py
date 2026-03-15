@@ -1,16 +1,62 @@
 # Read_File_Docling.py
-# ------------------------------------------------------------
-# Purpose:
-#   Ingest ~10 documents from INPUT_DIR and extract:
-#     1) Text  -> saved as a .docx per document
-#     2) Images/Figures -> saved as individual .png files
-#     3) Tables -> saved as CSV and also into one SQLite DB
+# ============================================================================
+# MODULE 1: DOCUMENT EXTRACTION
+# ============================================================================
 #
-# Next step: a separate script will load these into LangChain.
+# PURPOSE:
+#   Extract text, tables, and images from enterprise documents (PDF, DOCX, PPTX, HTML)
+#   Outputs organized into docling_output/ folder for processing by other modules
 #
-# Install:
-#   pip install docling docling-core pandas pillow python-docx
-# ------------------------------------------------------------
+# WHAT IT DOES:
+#   1) Text   → Saved as DOCX files per document
+#   2) Images → Saved as PNG files per figure
+#   3) Tables → Saved as CSV + SQLite database
+#   4) Creates manifest.json metadata index
+#
+# INPUT REQUIRED:
+#   - Documents in INPUT_DIR folder (PDF, DOCX, PPTX, HTML, MD)
+#   - No Azure credentials needed for this module
+#
+# OUTPUT CREATED:
+#   - docling_output/<doc_id>/text/<doc_id>.docx
+#   - docling_output/<doc_id>/tables/table_001.csv
+#   - docling_output/<doc_id>/images/figure_001.png
+#   - docling_output/tables.sqlite
+#   - docling_output/manifest.json
+#
+# RUNTIME: 30-120 seconds per document (depends on complexity)
+#
+# ============================================================================
+# SETUP INSTRUCTIONS
+# ============================================================================
+#
+# Step 1: CREATE PYTHON ENVIRONMENT
+#   Option A (Conda):
+#     conda create -n multimodal_rag python=3.10
+#     conda activate multimodal_rag
+#
+#   Option B (venv):
+#     python -m venv multimodal_rag
+#     multimodal_rag\Scripts\activate  # Windows
+#     source multimodal_rag/bin/activate  # macOS/Linux
+#
+#   Option C (Existing env):
+#     conda activate myenv310  # or your env name
+#
+# Step 2: INSTALL DEPENDENCIES
+#   If you get import errors, uncomment and run the pip install below:
+
+# !pip install docling docling-core pandas pillow python-docx
+# OR for full requirements:
+# !pip install -r requirements.txt
+
+# Step 3: CONFIGURE PATHS
+#   Search for "PUT YOUR PATH HERE" below and update INPUT_DIR and OUTPUT_DIR
+#
+# Step 4: RUN THE SCRIPT
+#   python Read_File_Docling.py
+#
+# ============================================================================
 
 from pathlib import Path
 import re
@@ -30,11 +76,16 @@ from docling_core.types.doc import TextItem, PictureItem
 # CONFIG (edit only here)
 # =========================
 
-INPUT_DIR = Path("C:\\Users\\srika\\Documents\\Microsoft_19jan\\MS_NOIDA_FEB\\M4 packet")            # Folder with your 10 documents
-OUTPUT_DIR = Path("docling_output") # Where extracted artifacts go
+# PUT YOUR PATH HERE: Replace with folder containing your documents (PDF, DOCX, PPTX, HTML)
+INPUT_DIR = Path(r"C:\Users\shonr\OneDrive - Tekframeworks\Training\Microsoft\Microsoft_SkillupL200\M4\Lab Material")
+
+# PUT YOUR PATH HERE: Where extracted artifacts will be saved (can be relative or absolute)
+OUTPUT_DIR = Path("docling_output")
+
 SQLITE_NAME = "tables.sqlite"
 PDF_IMAGE_SCALE = 2.0               # Higher = sharper figure images
 
+# File types to process
 SUPPORTED_EXTS = {".pdf", ".docx", ".pptx", ".html", ".htm", ".md"}
 
 # =========================

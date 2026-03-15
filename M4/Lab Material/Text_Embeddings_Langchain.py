@@ -1,3 +1,65 @@
+# Text_Embeddings_Langchain.py
+# ============================================================================
+# MODULE 3: TEXT INTELLIGENCE ENGINE
+# ============================================================================
+#
+# PURPOSE:
+#   Load extracted DOCX files (from Module 1)
+#   Apply recursive character-based chunking to preserve semantics
+#   Generate stable IDs for tracking and updates
+#   Create embeddings using Azure OpenAI
+#   Store in Chroma vector database
+#
+# WHAT IT DOES:
+#   1) Reads DOCX files from docling_output/
+#   2) Applies recursive character-based text splitting
+#   3) Generates stable chunk IDs for auditing/tracking
+#   4) Embeds all chunks using Azure OpenAI embeddings API
+#   5) Stores in Chroma vector database with metadata
+#
+# INPUT REQUIRED:
+#   - docling_output/*/text/*.docx (from Module 1: Read_File_Docling.py)
+#   - .env file with Azure OpenAI embeddings deployment
+#
+# OUTPUT CREATED:
+#   - vector_db_text_chroma/ (Chroma database with text embeddings)
+#
+# RUNTIME: 30-120 seconds (depends on document size)
+#
+# PREREQUISITE:
+#   Run Module 1 (Read_File_Docling.py) BEFORE this script
+#
+# ============================================================================
+# SETUP INSTRUCTIONS
+# ============================================================================
+#
+# Step 1: ACTIVATE PYTHON ENVIRONMENT
+#   conda activate multimodal_rag
+#   # OR
+#   source myenv310/bin/activate  # (macOS/Linux)
+#   myenv310\Scripts\activate      # (Windows)
+#
+# Step 2: INSTALL DEPENDENCIES
+#   If you get import errors, uncomment and run:
+
+# !pip install -q python-dotenv python-docx langchain-core langchain-text-splitters langchain-openai chromadb langchain-chroma
+# OR for full requirements:
+# !pip install -r requirements.txt
+
+# Step 3: ENSURE MODULE 1 COMPLETED
+#   Run: python Read_File_Docling.py
+#   Verify: Check that docling_output/ folder exists with extracted text
+#
+# Step 4: CONFIGURE PATHS & AZURE CREDENTIALS
+#   - Search for "PUT YOUR PATH HERE" below
+#   - Create/update .env file with Azure OpenAI credentials
+#   - Verify AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT deployment name
+#
+# Step 5: RUN THE SCRIPT
+#   python Text_Embeddings_Langchain.py
+#
+# ============================================================================
+
 # =========================
 # 0) Install (run once)
 # =========================
@@ -8,15 +70,20 @@
 # =========================
 from pathlib import Path
 
-DOCLING_OUTPUT_DIR = Path("C:\\Users\\srika\\Documents\\Microsoft_19jan\\MS_NOIDA_FEB\\M4 packet\\docling_output")     # output of your docling_extract.py
-PERSIST_DIR = Path("C:\\Users\\srika\\Documents\\Microsoft_19jan\\MS_NOIDA_FEB\\M4 packet\\vector_db_table_chroma")     # where Chroma persists
+# PUT YOUR PATH HERE: Where Module 1 (Read_File_Docling.py) saved extracted documents
+DOCLING_OUTPUT_DIR = Path("C:\\Users\\srika\\Documents\\Microsoft_19jan\\MS_NOIDA_FEB\\M4 packet\\docling_output")
+
+# PUT YOUR PATH HERE: Where to save Chroma vector database for text (separate from table/image DBs)
+PERSIST_DIR = Path("C:\\Users\\srika\\Documents\\Microsoft_19jan\\MS_NOIDA_FEB\\M4 packet\\vector_db_text_chroma")
+
 COLLECTION_NAME = "text_chunks_v1"
 
+# Chunking parameters for text
 CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 150
 SEPARATORS = ["\n\n", "\n", ". ", " ", ""]
 
-# Optional: to limit to exactly 10 docs, set to 10; else None
+# Optional: to limit to exactly 10 docs for testing, set to 10; else None
 MAX_DOCS = None
 
 # =========================
@@ -25,6 +92,7 @@ MAX_DOCS = None
 import os
 from dotenv import load_dotenv
 
+# PUT YOUR PATH HERE: Location of .env file with Azure OpenAI credentials
 load_dotenv(dotenv_path=Path(".env"), override=False)
 
 REQUIRED_ENV_VARS = [

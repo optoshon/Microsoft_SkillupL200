@@ -1,442 +1,987 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Enterprise Multimodal RAG Pipeline — Training Guide</title>
 
-<style>
-body{
-    margin:0;
-    font-family:Segoe UI,Roboto,Arial;
-    background:#0f172a;
-    color:#e5e7eb;
-}
-header{
-    background:linear-gradient(90deg,#1e3a8a,#7c3aed);
-    padding:30px;
-    text-align:center;
-}
-h1{margin:0;font-size:34px}
-h2{color:#93c5fd;border-bottom:2px solid #334155;padding-bottom:6px}
-h3{color:#c4b5fd}
-section{padding:35px 8%}
-.card{
-    background:#111827;
-    padding:20px;
-    border-radius:14px;
-    margin:18px 0;
-    box-shadow:0 0 15px rgba(0,0,0,.4);
-}
-.code{
-    background:#020617;
-    padding:14px;
-    border-radius:10px;
-    font-family:monospace;
-    color:#7dd3fc;
-    white-space:pre-wrap;
-}
-.flow{
-    background:#020617;
-    padding:18px;
-    border-radius:14px;
-    text-align:center;
-    font-size:18px;
-}
-.tag{
-    display:inline-block;
-    padding:6px 12px;
-    margin:5px;
-    border-radius:8px;
-    background:#1f2937;
-    color:#93c5fd;
-}
-table{
-    border-collapse:collapse;
-    width:100%;
-}
-th,td{
-    border:1px solid #334155;
-    padding:10px;
-}
-th{
-    background:#1e293b;
-}
-.highlight{
-    color:#34d399;
-    font-weight:bold;
-}
-.footer{
-    text-align:center;
-    padding:40px;
-    font-size:14px;
-    color:#94a3b8;
-}
-</style>
+<head>
+    <meta charset="UTF-8">
+    <title>Enterprise Multimodal RAG Pipeline — Training Guide</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Segoe UI, Roboto, Arial;
+            background: #0f172a;
+            color: #e5e7eb;
+        }
+
+        header {
+            background: linear-gradient(90deg, #1e3a8a, #7c3aed);
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 34px
+        }
+
+        h2 {
+            color: #93c5fd;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 6px
+        }
+
+        h3 {
+            color: #c4b5fd
+        }
+
+        section {
+            padding: 35px 8%
+        }
+
+        .card {
+            background: #111827;
+            padding: 20px;
+            border-radius: 14px;
+            margin: 18px 0;
+            box-shadow: 0 0 15px rgba(0, 0, 0, .4);
+        }
+
+        .code {
+            background: #020617;
+            padding: 14px;
+            border-radius: 10px;
+            font-family: monospace;
+            color: #7dd3fc;
+            white-space: pre-wrap;
+        }
+
+        .flow {
+            background: #020617;
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 5px;
+            border-radius: 8px;
+            background: #1f2937;
+            color: #93c5fd;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #334155;
+            padding: 10px;
+        }
+
+        th {
+            background: #1e293b;
+        }
+
+        .highlight {
+            color: #34d399;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+    </style>
 </head>
 
 <body>
 
-<header>
-<h1>Enterprise Multimodal RAG Pipeline</h1>
-<p>Architecture • Execution Order • Production Design</p>
-</header>
-
-<section>
-
-<h2>1. Environment Setup</h2>
-
-<div class="card">
-<h3>Create Stable Python Environment (Conda)</h3>
-<div class="code">conda create -n multimodal_rag python=3.10
-conda activate multimodal_rag</div>
-
-<h3>Install Dependencies</h3>
-<div class="code">pip install -r requirements.txt</div>
-
-<p>Requirements include vector DB, embeddings, doc parsing, OCR, reranking and multimodal processing.</p>
-</div>
-
-</section>
-
-<section>
-
-<h2>2. Business Use Case</h2>
-
-<div class="card">
-<p>This pipeline enables enterprises to build a <span class="highlight">Unified Knowledge Intelligence System</span> capable of querying:</p>
-
-<ul>
-<li>Documents</li>
-<li>Tables</li>
-<li>Images</li>
-<li>Charts</li>
-<li>Scanned files</li>
-</ul>
-
-<p>Typical production scenarios:</p>
-
-<ul>
-<li>Enterprise policy assistant</li>
-<li>Financial report analyst</li>
-<li>Engineering document search</li>
-<li>Legal compliance assistant</li>
-<li>Knowledge-base copilots</li>
-</ul>
-
-</div>
-
-</section>
-
-<section>
-
-<h2>3. End-to-End Execution Flow</h2>
-
-<div class="flow">
-
-INPUT FILES  
-↓  
-Read_File_Docling.py  
-↓  
-Text / Tables / Images Extracted  
-↓  
-Embedding Pipelines (Parallel)
-
-<br><br>
-
-Text_Embeddings → Vector DB  
-Tables_Embeddings → Vector DB  
-Image_VLM_Embeddings → Vector DB  
-
-<br><br>
-
-↓  
-Multimodal_Ensemble_Retriever  
-↓  
-Enterprise Answer Generation
-
-</div>
-
-</section>
-
-<section>
-
-<h2>4. Execution Order (Mandatory)</h2>
-
-<div class="card">
-
-<table>
-<tr><th>Order</th><th>Script</th><th>Purpose</th></tr>
-
-<tr>
-<td>1</td>
-<td>Read_File_Docling.py</td>
-<td>Extract text, tables, images from documents</td>
-</tr>
-
-<tr>
-<td>2</td>
-<td>Table_Embeddings_Langchain_vid.py</td>
-<td>Create structured embeddings from tables</td>
-</tr>
-
-<tr>
-<td>3</td>
-<td>Text_Embeddings_Langchain.py</td>
-<td>Chunk + embed document text</td>
-</tr>
-
-<tr>
-<td>4</td>
-<td>Image_VLM_Embeddings_Langchain_vid.py</td>
-<td>Convert images → structured JSON → embeddings</td>
-</tr>
-
-<tr>
-<td>5</td>
-<td>Multimodal_Ensemble_Retriever_Enterprise.py</td>
-<td>Unified search + rerank + LLM answer</td>
-</tr>
-
-</table>
-
-</div>
-
-</section>
-
-<section>
-
-<h2>5. Module Deep Dive</h2>
-
-<div class="card">
-<h3>Module 1 — Document Extraction</h3>
-<p><b>Script:</b> Read_File_Docling.py</p>
-
-<ul>
-<li>Reads enterprise documents</li>
-<li>Extracts text blocks</li>
-<li>Extracts tables → CSV + SQLite</li>
-<li>Extracts images → PNG</li>
-<li>Generates manifest JSON</li>
-</ul>
-
-<p><b>Enterprise Advantage:</b> Structured knowledge extraction across formats.</p>
-</div>
-
-
-<div class="card">
-<h3>Module 2 — Table Intelligence Engine</h3>
-<p><b>Script:</b> Table_Embeddings_Langchain_vid.py</p>
-
-<ul>
-<li>Reads CSV tables</li>
-<li>Chunks rows intelligently</li>
-<li>Adds metadata context headers</li>
-<li>Embeds table meaning</li>
-<li>Stores in vector DB</li>
-</ul>
-
-<p><b>Why special logic?</b><br>
-Tables contain relational meaning not captured by plain text embeddings.</p>
-</div>
-
-
-<div class="card">
-<h3>Module 3 — Text Intelligence Engine</h3>
-<p><b>Script:</b> Text_Embeddings_Langchain.py</p>
-
-<ul>
-<li>Loads extracted DOCX</li>
-<li>Chunks text recursively</li>
-<li>Generates stable chunk IDs</li>
-<li>Embeds semantic meaning</li>
-<li>Stores in vector database</li>
-</ul>
-
-<p><b>Enterprise value:</b> Precise semantic search across thousands of documents.</p>
-
-</div>
-
-
-<div class="card">
-<h3>Module 4 — Image Intelligence Engine</h3>
-<p><b>Script:</b> Image_VLM_Embeddings_Langchain_vid.py</p>
-
-<ul>
-<li>Reads extracted figures</li>
-<li>Sends image to Vision LLM</li>
-<li>Forces structured JSON interpretation</li>
-<li>Embeds interpretation text</li>
-<li>Stores embeddings</li>
-</ul>
-
-<p><b>Example extracted intelligence:</b></p>
-
-<ul>
-<li>Flowchart meaning</li>
-<li>Org chart hierarchy</li>
-<li>Chart values</li>
-<li>Diagram relationships</li>
-</ul>
-
-</div>
-
-
-<div class="card">
-<h3>Module 5 — Enterprise Multimodal Retriever</h3>
-<p><b>Script:</b> Multimodal_Ensemble_Retriever_Enterprise.py</p>
-
-
-<ul>
-<li>Queries all vector databases</li>
-<li>Returns top results per modality</li>
-<li>Merges + ranks results</li>
-<li>Removes duplicates</li>
-<li>Optional cross-encoder reranking</li>
-<li>Builds structured context</li>
-<li>Generates LLM answer</li>
-<li>Saves trace logs + outputs</li>
-</ul>
-
-<p><b>Production Strength:</b></p>
-<ul>
-<li>Observability logs</li>
-<li>Cost estimation hooks</li>
-<li>Audit artifacts</li>
-<li>Deterministic ranking</li>
-</ul>
-
-</div>
-
-</section>
-
-<section>
-
-<h2>6. Architecture Principles Used</h2>
-
-<div class="card">
-
-<span class="tag">Modular Design</span>
-<span class="tag">Deterministic Retrieval</span>
-<span class="tag">No Silent Failures</span>
-<span class="tag">Traceability</span>
-<span class="tag">Enterprise Logging</span>
-<span class="tag">Stable IDs</span>
-<span class="tag">Vector Isolation Per Modality</span>
-
-</div>
-
-</section>
-
-<section>
-
-<h2>7. Production Architecture Diagram (Logical)</h2>
-
-<div class="flow">
-
-Documents → Extraction Engine  
-↓  
-Multimodal Indexing Layer  
-↓  
-Vector Databases  
-(Text | Tables | Images | OCR)  
-↓  
-Retriever Engine  
-↓  
-Reranker  
-↓  
-LLM  
-↓  
-Final Answer + Trace Logs
-
-</div>
-
-</section>
-
-<section>
-
-<h2>8. Why This Architecture Is Enterprise-Grade</h2>
-
-<div class="card">
-
-<table>
-
-<tr><th>Capability</th><th>Benefit</th></tr>
-
-<tr>
-<td>Separate vector DB per modality</td>
-<td>Higher retrieval accuracy</td>
-</tr>
-
-<tr>
-<td>Stable chunk IDs</td>
-<td>Supports updates + dedupe</td>
-</tr>
-
-<tr>
-<td>Structured vision output</td>
-<td>No hallucinated image reasoning</td>
-</tr>
-
-<tr>
-<td>Reranker stage</td>
-<td>Improves answer quality</td>
-</tr>
-
-<tr>
-<td>Trace logs</td>
-<td>Audit + debugging + compliance</td>
-</tr>
-
-<tr>
-<td>Cost estimator</td>
-<td>Enterprise budgeting visibility</td>
-</tr>
-
-</table>
-
-</div>
-
-</section>
-
-<section>
-
-
-<div class="card">
-
-<ul>
-<li>This is not a demo pipeline — it is production architecture.</li>
-<li>Each modality is treated differently because information types differ.</li>
-<li>Structured extraction drastically improves retrieval precision.</li>
-<li>Enterprise RAG is an orchestration problem, not just embeddings.</li>
-<li>Observability is mandatory for enterprise AI.</li>
-</ul>
-
-</div>
-
-</section>
-
-<section>
-
-<h2> Final Takeaways</h2>
-
-<div class="card">
-
-<ul>
-<li>Multimodal RAG is the future of enterprise knowledge systems.</li>
-<li>Architecture matters more than model size.</li>
-<li>Separation of modality pipelines is critical.</li>
-<li>Deterministic systems are production-safe.</li>
-<li>Logging + traceability = enterprise trust.</li>
-</ul>
-
-</div>
-
-</section>
-
-<div class="footer">
-Enterprise Multimodal RAG Training Framework<br>
-Designed for AI Engineering Teams
-</div>
+    <header>
+        <h1>Enterprise Multimodal RAG Pipeline</h1>
+        <p>Architecture • Execution Order • Production Design</p>
+    </header>
+
+    <section>
+
+        <h2>1. Environment Setup</h2>
+
+        <div class="card">
+            <h3>Option A: Create New Conda Environment</h3>
+            <div class="code">conda create -n multimodal_rag python=3.10
+                conda activate multimodal_rag</div>
+
+            <h3>Option B: Create Python venv Environment</h3>
+            <div class="code"># Windows:
+                python -m venv multimodal_rag
+                multimodal_rag\Scripts\activate
+
+                # macOS/Linux:
+                python -m venv multimodal_rag
+                source multimodal_rag/bin/activate</div>
+
+            <h3>Option C: Use Existing Environment</h3>
+            <p>If you already have an environment created (e.g., <code>myenv310</code>), activate it:</p>
+            <div class="code"># Conda:
+                conda activate myenv310
+
+                # OR venv:
+                myenv310/Scripts/activate # Windows
+                source myenv310/bin/activate # macOS/Linux</div>
+
+            <h3>Install Dependencies</h3>
+            <p><b>After activating your environment, run:</b></p>
+            <div class="code">pip install -r requirements.txt</div>
+            <p>Requirements include: vector DB (Chroma/FAISS), embeddings (Azure OpenAI), doc parsing (Docling), OCR
+                (EasyOCR), reranking (sentence-transformers), and multimodal processing (LangChain).</p>
+
+            <p><b>⚠️ If you get package errors during script execution, uncomment the pip install line at the top of
+                    each .py file.</b></p>
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>1.5. Environment Variables Setup</h2>
+
+        <div class="card">
+            <h3>Create .env File</h3>
+            <p>Create a <code>.env</code> file in your project root directory with your Azure OpenAI credentials:</p>
+            <div class="code">AZURE_OPENAI_ENDPOINT=https://<your-resource>.openai.azure.com/
+                    AZURE_OPENAI_API_KEY=<your-api-key>
+                        AZURE_OPENAI_API_VERSION=2024-12-01-preview
+                        AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT=text-embedding-3-large
+                        AZURE_OPENAI_VISION_DEPLOYMENT=gpt-4o
+                        AZURE_OPENAI_LLM_DEPLOYMENT=gpt-4o
+                        AZURE_OPENAI_CHAT_DEPLOYMENT=gpt-4o</div>
+
+            <h3>How to Get Azure OpenAI Credentials</h3>
+            <ol>
+                <li>Go to <a href="https://portal.azure.com" target="_blank">Azure Portal</a></li>
+                <li>Find your OpenAI resource (e.g., "tekframeworksllms")</li>
+                <li>Click <b>Keys and Endpoint</b> in the left sidebar</li>
+                <li>Copy <b>Endpoint</b> and <b>API Key</b></li>
+                <li>Paste into your .env file</li>
+            </ol>
+
+            <h3>Validate .env is Loaded</h3>
+            <p>Run this command to verify all required environment variables are set:</p>
+            <div class="code">python -c "import os; from dotenv import load_dotenv; load_dotenv();
+                for var in ['AZURE_OPENAI_ENDPOINT', 'AZURE_OPENAI_API_KEY', 'AZURE_OPENAI_API_VERSION',
+                'AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT']:
+                print(f'{var}: {"✅" if os.getenv(var) else "❌"}')
+                "</div>
+
+            <p><b>⚠️ Common Issues:</b></p>
+            <ul>
+                <li><b>401 Error:</b> Invalid or expired API key. Regenerate in Azure Portal.</li>
+                <li><b>404 Error:</b> Deployment name doesn't exist. Check deployment names in Model deployments
+                    section.</li>
+                <li>.env not found: Place it in the same folder where you run the scripts from.
+            </ul>
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>2. Business Use Case</h2>
+
+        <div class="card">
+            <p>This pipeline enables enterprises to build a <span class="highlight">Unified Knowledge Intelligence
+                    System</span> capable of querying:</p>
+
+            <ul>
+                <li>Documents</li>
+                <li>Tables</li>
+                <li>Images</li>
+                <li>Charts</li>
+                <li>Scanned files</li>
+            </ul>
+
+            <p>Typical production scenarios:</p>
+
+            <ul>
+                <li>Enterprise policy assistant</li>
+                <li>Financial report analyst</li>
+                <li>Engineering document search</li>
+                <li>Legal compliance assistant</li>
+                <li>Knowledge-base copilots</li>
+            </ul>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>3. End-to-End Execution Flow</h2>
+
+        <div
+            style="background:#020617; padding:30px; border-radius:14px; font-family:monospace; color:#7dd3fc; text-align:center;">
+            <div style="margin:15px 0; font-weight:bold; font-size:16px;">📄 INPUT FILES</div>
+            <div style="margin:5px; font-size:24px;">↓</div>
+            <div
+                style="margin:15px 0; background:#1f2937; padding:10px; border-radius:8px; display:inline-block; min-width:300px;">
+                <b>Read_File_Docling.py</b><br>&nbsp;<br><span style="font-size:12px;">Extract Text | Tables |
+                    Images</span>
+            </div>
+            <div style="margin:5px; font-size:24px;">↓</div>
+            <div style="margin:15px 0; font-size:14px; color:#34d399;"><b>3 Parallel Embedding Pipelines</b></div>
+            <div style="display:inline-block; padding:10px; margin:10px;">
+                <div style="background:#1f2937; padding:8px; border-radius:6px; margin:5px; white-space:nowrap;">📝 Text
+                    Embeddings</div>
+                <div style="margin:5px; font-size:14px;">↓</div>
+                <div style="background:#111827; padding:8px; border-radius:6px; margin:5px;">Chroma DB</div>
+            </div>
+            <div style="display:inline-block; padding:10px; margin:10px;">
+                <div style="background:#1f2937; padding:8px; border-radius:6px; margin:5px; white-space:nowrap;">📊
+                    Table Embeddings</div>
+                <div style="margin:5px; font-size:14px;">↓</div>
+                <div style="background:#111827; padding:8px; border-radius:6px; margin:5px;">Chroma DB</div>
+            </div>
+            <div style="display:inline-block; padding:10px; margin:10px;">
+                <div style="background:#1f2937; padding:8px; border-radius:6px; margin:5px; white-space:nowrap;">🖼️
+                    Image VLM</div>
+                <div style="margin:5px; font-size:14px;">↓</div>
+                <div style="background:#111827; padding:8px; border-radius:6px; margin:5px;">Chroma DB</div>
+            </div>
+            <div style="margin:20px 0; font-size:24px;">↓</div>
+            <div
+                style="margin:15px 0; background:#1f2937; padding:10px; border-radius:8px; display:inline-block; min-width:300px;">
+                <b>Multimodal_Ensemble_Retriever</b><br>&nbsp;<br><span style="font-size:12px;">Query All DBs | Dedupe |
+                    Rerank | LLM</span>
+            </div>
+            <div style="margin:5px; font-size:24px;">↓</div>
+            <div
+                style="margin:15px 0; background:#34d399; color:#000; padding:10px; border-radius:8px; display:inline-block; min-width:300px; font-weight:bold;">
+                ✅ FINAL ANSWER + TRACE LOGS</div>
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>4. Execution Order (Mandatory)</h2>
+
+        <div class="card">
+
+            <table>
+                <tr>
+                    <th>Order</th>
+                    <th>Script</th>
+                    <th>Purpose</th>
+                </tr>
+
+                <tr>
+                    <td>1</td>
+                    <td>Read_File_Docling.py</td>
+                    <td>Extract text, tables, images from documents</td>
+                </tr>
+
+                <tr>
+                    <td>2</td>
+                    <td>Table_Embeddings_Langchain_vid.py</td>
+                    <td>Create structured embeddings from tables</td>
+                </tr>
+
+                <tr>
+                    <td>3</td>
+                    <td>Text_Embeddings_Langchain.py</td>
+                    <td>Chunk + embed document text</td>
+                </tr>
+
+                <tr>
+                    <td>4</td>
+                    <td>Image_VLM_Embeddings_Langchain_vid.py</td>
+                    <td>Convert images → structured JSON → embeddings</td>
+                </tr>
+
+                <tr>
+                    <td>5</td>
+                    <td>Multimodal_Ensemble_Retriever_Enterprise.py</td>
+                    <td>Unified search + rerank + LLM answer</td>
+                </tr>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>5. Module Deep Dive</h2>
+
+        <div class="card">
+            <h3>Module 1 — Document Extraction</h3>
+            <p><b>Script:</b> Read_File_Docling.py</p>
+
+            <p><b>What it does:</b> Reads PDF, DOCX, PPT, and HTML documents. Extracts text, tables, and figures into
+                separate, organized formats ready for processing.</p>
+
+            <p><b>Input required:</b></p>
+            <ul>
+                <li>Documents in <code>INPUT_DIR</code> (PDF, DOCX, PPTX, HTML)</li>
+                <li>.env file with Azure OpenAI credentials (optional for extraction, required later)</li>
+            </ul>
+
+            <p><b>Output produced:</b></p>
+            <ul>
+                <li><code>docling_output/<doc_id>/text/<doc_id>.docx</code> — Extracted text as DOCX</li>
+                <li><code>docling_output/<doc_id>/tables/table_001.csv</code> — Tables as CSV files</li>
+                <li><code>docling_output/<doc_id>/images/figure_001.png</code> — Extracted figures as PNG</li>
+                <li><code>docling_output/<doc_id>/tables.sqlite</code> — All tables in SQLite DB</li>
+                <li><code>docling_output/manifest.json</code> — Metadata index</li>
+            </ul>
+
+            <p><b>Typical runtime:</b> 30-120 seconds per document (depends on size and complexity)</p>
+
+            <p><b>Configuration required:</b> Set <code>INPUT_DIR</code> and <code>OUTPUT_DIR</code> paths in script
+                (search for "PUT YOUR PATH HERE")</p>
+
+            <p><b>Enterprise Advantage:</b> Structured knowledge extraction across formats — no data loss.</p>
+        </div>
+
+
+        <div class="card">
+            <h3>Module 2 — Table Intelligence Engine</h3>
+            <p><b>Script:</b> Table_Embeddings_Langchain_vid.py</p>
+
+            <p><b>What it does:</b> Reads CSV tables extracted by Docling. Applies intelligent row-based chunking with
+                overlap. Converts to human-readable format (markdown or CSV) and creates embeddings for semantic search.
+            </p>
+
+            <p><b>Input required:</b></p>
+            <ul>
+                <li><code>docling_output/*/tables/*.csv</code> — Tables from Module 1</li>
+                <li>.env with <code>AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT</code></li>
+            </ul>
+
+            <p><b>Output produced:</b></p>
+            <ul>
+                <li><code>vector_db_table_chroma/</code> — Chroma vector database with table chunk embeddings</li>
+                <li><code>table_ingest_manifest.json</code> — Metadata about ingested tables</li>
+            </ul>
+
+            <p><b>Typical runtime:</b> 15-60 seconds (depends on table size and count)</p>
+
+            <p><b>Configuration required:</b> Set <code>DOCLING_OUTPUT_DIR</code> and <code>PERSIST_DIR</code> paths
+                (search for "PUT YOUR PATH HERE")</p>
+
+            <p><b>Why special logic?</b> Tables contain relational meaning (rows, columns, headers) not captured by
+                plain text embeddings. Row-based chunking preserves table structure.</p>
+
+            <p><b>Common errors:</b></p>
+            <ul>
+                <li><b>401/404 Azure errors:</b> Check .env file and deployment names</li>
+                <li><b>FileNotFoundError:</b> Verify Module 1 completed successfully; check paths</li>
+            </ul>
+        </div>
+
+
+        <div class="card">
+            <h3>Module 3 — Text Intelligence Engine</h3>
+            <p><b>Script:</b> Text_Embeddings_Langchain.py</p>
+
+            <p><b>What it does:</b> Loads DOCX text extracted by Docling. Applies recursive character-based chunking to
+                preserve semantic boundaries. Generates stable IDs for tracking. Embeds all chunks and stores in vector
+                database.</p>
+
+            <p><b>Input required:</b></p>
+            <ul>
+                <li><code>docling_output/*/text/*.docx</code> — Documents from Module 1</li>
+                <li>.env with <code>AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT</code></li>
+            </ul>
+
+            <p><b>Output produced:</b></p>
+            <ul>
+                <li><code>vector_db_text_chroma/</code> — Chroma vector database with text chunk embeddings</li>
+            </ul>
+
+            <p><b>Typical runtime:</b> 30-120 seconds (depends on document size)</p>
+
+            <p><b>Configuration required:</b> Set <code>DOCLING_OUTPUT_DIR</code> and <code>PERSIST_DIR</code> paths.
+                Adjust <code>CHUNK_SIZE</code> and <code>CHUNK_OVERLAP</code> if needed (search for "PUT YOUR PATH
+                HERE")</p>
+
+            <p><b>Enterprise value:</b> Precise semantic search across thousands of documents with stable chunk IDs for
+                auditing and updates.</p>
+
+        </div>
+
+
+        <div class="card">
+            <h3>Module 4 — Image Intelligence Engine</h3>
+            <p><b>Script:</b> Image_VLM_Embeddings_Langchain_vid.py</p>
+
+            <p><b>What it does:</b> Reads image figures extracted by Docling. Sends each to Azure OpenAI Vision
+                (GPT-4V). Forces structured JSON output describing the image content. Embeds the JSON as text for
+                semantic search without hallucinations.</p>
+
+            <p><b>Input required:</b></p>
+            <ul>
+                <li><code>docling_output/*/images/*.png</code> — Figures from Module 1</li>
+                <li>.env with <code>AZURE_OPENAI_VISION_DEPLOYMENT</code> and
+                    <code>AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT</code>
+                </li>
+            </ul>
+
+            <p><b>Output produced:</b></p>
+            <ul>
+                <li><code>vector_db_image_vlm_chroma/</code> — Chroma vector database with image interpretation
+                    embeddings</li>
+                <li><code>image_vlm_manifest.json</code> — Structured interpretations of each image</li>
+            </ul>
+
+            <p><b>Typical runtime:</b> 60-300 seconds (slower due to Vision LLM API calls; ~2-5 seconds per image)</p>
+
+            <p><b>Configuration required:</b> Set <code>DOCLING_OUTPUT_DIR</code> and <code>PERSIST_DIR</code> paths
+                (search for "PUT YOUR PATH HERE")</p>
+
+            <p><b>Example extracted intelligence:</b></p>
+            <ul>
+                <li>Flowchart meaning and connections</li>
+                <li>Org chart hierarchy and roles</li>
+                <li>Chart values and trends</li>
+                <li>Diagram relationships and labels</li>
+            </ul>
+
+            <p><b>Common errors:</b></p>
+            <ul>
+                <li><b>Vision deployment not found:</b> Ensure <code>gpt-4o</code> or <code>gpt-4-vision</code> is
+                    deployed in Azure</li>
+                <li><b>API rate limits:</b> Large batches may hit rate limits; run in smaller batches</li>
+            </ul>
+
+        </div>
+
+
+        <div class="card">
+            <h3>Module 5 — Enterprise Multimodal Retriever</h3>
+            <p><b>Script:</b> Multimodal_Ensemble_Retriever_Enterprise.py</p>
+
+            <p><b>What it does:</b> Queries all 3 vector databases (text, tables, images) with the user query. Returns
+                top results per modality. Deduplicates and optionally reranks using cross-encoder. Sends ranked context
+                to LLM for final answer. Logs everything for audit and debugging.</p>
+
+            <p><b>Input required:</b></p>
+            <ul>
+                <li><code>vector_db_text_chroma/</code> — From Module 3</li>
+                <li><code>vector_db_table_chroma/</code> — From Module 2</li>
+                <li><code>vector_db_image_vlm_chroma/</code> — From Module 4</li>
+                <li>.env with all Azure OpenAI deployments</li>
+            </ul>
+
+            <p><b>Output produced:</b></p>
+            <ul>
+                <li><code>outputs/run_YYYYMMDD_HHMMSS/</code> — Query artifacts including:
+                    <ul>
+                        <li><code>answer.txt</code> — Final LLM-generated answer</li>
+                        <li><code>context_blocks.csv</code> — All retrieved chunks with scores</li>
+                        <li><code>query_timeline.json</code> — Per-stage timings and costs</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p><b>Typical runtime:</b> 10-30 seconds per query (depends on LLM response time)</p>
+
+            <p><b>Configuration required:</b> Ensure all 3 vector DB directories exist (from Modules 2-4). Paths should
+                match what those modules created.</p>
+
+            <p><b>Production Strength:</b></p>
+            <ul>
+                <li>Observability logs and query timelines</li>
+                <li>Cost estimation hooks (configure in script)</li>
+                <li>Audit artifacts (all retrieved sources saved to CSV)</li>
+                <li>Deterministic deduplication and ranking</li>
+                <li>Interactive chat loop for live testing</li>
+            </ul>
+
+            <p><b>Common errors:</b></p>
+            <ul>
+                <li><b>Collection not found:</b> Verify Modules 2-4 completed; vector DBs should exist</li>
+                <li><b>No results returned:</b> Adjust <code>TOP_K_PER_MODALITY</code> or <code>FINAL_CONTEXT_K</code>
+                    parameters</li>
+            </ul>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>6. Architecture Principles Used</h2>
+
+        <div class="card">
+
+            <span class="tag">Modular Design</span>
+            <span class="tag">Deterministic Retrieval</span>
+            <span class="tag">No Silent Failures</span>
+            <span class="tag">Traceability</span>
+            <span class="tag">Enterprise Logging</span>
+            <span class="tag">Stable IDs</span>
+            <span class="tag">Vector Isolation Per Modality</span>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>7. Production Architecture Diagram (Logical)</h2>
+
+        <div style="background:#020617; padding:30px; border-radius:14px; font-family:monospace; color:#7dd3fc;">
+            <table style="width:100%; border-collapse:collapse; text-align:center;">
+                <tr>
+                    <td colspan="3"
+                        style="padding:15px; background:#1f2937; border-radius:8px; font-weight:bold; font-size:16px; margin:10px 0;">
+                        📚 DOCUMENTS</td>
+                </tr>
+                <tr>
+                    <td style="padding:10px; font-size:20px;">↓</td>
+                    <td style="padding:10px; font-size:20px;">↓</td>
+                    <td style="padding:10px; font-size:20px;">↓</td>
+                </tr>
+                <tr>
+                    <td style="padding:15px; background:#1f2937; border-radius:6px; margin:5px;">🔍 Text<br>Extraction
+                    </td>
+                    <td style="padding:15px; background:#1f2937; border-radius:6px; margin:5px;">📊 Table<br>Extraction
+                    </td>
+                    <td style="padding:15px; background:#1f2937; border-radius:6px; margin:5px;">🖼️ Image<br>Extraction
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:10px; font-size:20px;">↓</td>
+                    <td style="padding:10px; font-size:20px;">↓</td>
+                    <td style="padding:10px; font-size:20px;">↓</td>
+                </tr>
+                <tr>
+                    <td style="padding:15px; background:#111827; border-radius:6px; margin:5px;">Text<br>Embeddings</td>
+                    <td style="padding:15px; background:#111827; border-radius:6px; margin:5px;">Table<br>Embeddings
+                    </td>
+                    <td style="padding:15px; background:#111827; border-radius:6px; margin:5px;">VLM<br>Interpretations
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:10px; font-size:20px;">↓</td>
+                    <td style="padding:10px; font-size:20px;">↓</td>
+                    <td style="padding:10px; font-size:20px;">↓</td>
+                </tr>
+                <tr>
+                    <td colspan="3"
+                        style="padding:15px; background:#6366f1; border-radius:8px; font-weight:bold; color:#fff;">🗄️
+                        VECTOR DATABASES (Chroma)</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="padding:10px; font-size:20px;">↓</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="padding:15px; background:#1f2937; border-radius:8px; font-weight:bold;">🔗
+                        ENSEMBLE RETRIEVER</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="padding:8px; font-size:12px; color:#c4b5fd;">Query All | Merge | Deduplicate
+                        | Score</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="padding:10px; font-size:20px;">↓</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="padding:15px; background:#1f2937; border-radius:8px; font-weight:bold;">🎚️
+                        RERANKER (Optional)</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="padding:8px; font-size:12px; color:#c4b5fd;">Cross-Encoder Re-scoring</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="padding:10px; font-size:20px;">↓</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="padding:15px; background:#1f2937; border-radius:8px; font-weight:bold;">🤖
+                        LLM GENERATION</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="padding:8px; font-size:12px; color:#c4b5fd;">Azure OpenAI GPT-4o | Generate
+                        Answer</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="padding:10px; font-size:20px;">↓</td>
+                </tr>
+                <tr>
+                    <td colspan="3"
+                        style="padding:15px; background:#34d399; color:#000; border-radius:8px; font-weight:bold;">✅
+                        ANSWER + 📋 TRACE LOGS + 💰 COST BREAKDOWN</td>
+                </tr>
+            </table>
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>8. Azure Deployment & Configuration</h2>
+
+        <div class="card">
+            <h3>Create or Use Existing Azure OpenAI Resource</h3>
+
+            <p><b>Step 1: Check if resource exists</b></p>
+            <ol>
+                <li>Go to <a href="https://portal.azure.com" target="_blank">Azure Portal</a></li>
+                <li>Search for "OpenAI" or "Cognitive Services"</li>
+                <li>If you see a resource (e.g., "tekframeworksllms"), proceed to Step 3</li>
+                <li>If not, proceed to Step 2</li>
+            </ol>
+
+            <p><b>Step 2: Create new Azure OpenAI resource (if needed)</b></p>
+            <ol>
+                <li>Click "Create a resource" → Search for "OpenAI"</li>
+                <li>Click "Create" → Fill in details:
+                    <ul>
+                        <li><b>Resource Group:</b> Create new or select existing</li>
+                        <li><b>Region:</b> East US, UK South, France Central, etc. (choose closest to you)</li>
+                        <li><b>Name:</b> e.g., "multimodal-rag-resource"</li>
+                        <li><b>Pricing:</b> Select Standard S0</li>
+                    </ul>
+                </li>
+                <li>Click "Review + Create" → "Create" (wait 5-10 minutes)</li>
+            </ol>
+
+            <h3>Step 3: Deploy Models</h3>
+
+            <p>Once your resource is ready:</p>
+
+            <ol>
+                <li>Click on your OpenAI resource</li>
+                <li>In left sidebar, click <b>Model deployments</b></li>
+                <li>Click <b>Create new deployment</b></li>
+                <li>Deploy these models:
+
+                    <table>
+                        <tr>
+                            <th>Model Name</th>
+                            <th>Deployment Name</th>
+                            <th>Purpose</th>
+                            <th>Capacity</th>
+                        </tr>
+                        <tr>
+                            <td>text-embedding-3-large</td>
+                            <td>text-embedding-3-large</td>
+                            <td>Text embeddings (Modules 2, 3, 4)</td>
+                            <td>1 (TPM: 240K minimum)</td>
+                        </tr>
+                        <tr>
+                            <td>gpt-4o</td>
+                            <td>gpt-4o</td>
+                            <td>Vision + Chat (Modules 4, 5)</td>
+                            <td>1 (TPM: 30K minimum)</td>
+                        </tr>
+                        <tr>
+                            <td>gpt-4</td>
+                            <td>gpt-4</td>
+                            <td>Alternative chat model (optional)</td>
+                            <td>1</td>
+                        </tr>
+                    </table>
+
+                </li>
+            </ol>
+
+            <h3>Step 4: Copy Credentials</h3>
+
+            <ol>
+                <li>Click on your OpenAI resource</li>
+                <li>In left sidebar, click <b>Keys and Endpoint</b></li>
+                <li>Copy <b>Endpoint</b> (URL starting with https://...)</li>
+                <li>Copy <b>Key 1</b> or <b>Key 2</b></li>
+                <li>Paste into your .env file:</li>
+            </ol>
+
+            <div class="code">AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+                AZURE_OPENAI_API_KEY=your-key-here
+                AZURE_OPENAI_API_VERSION=2024-12-01-preview
+                AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT=text-embedding-3-large
+                AZURE_OPENAI_VISION_DEPLOYMENT=gpt-4o
+                AZURE_OPENAI_LLM_DEPLOYMENT=gpt-4o
+                AZURE_OPENAI_CHAT_DEPLOYMENT=gpt-4o</div>
+
+            <h3>Step 5: Validate Connection</h3>
+
+            <p>Run this test to verify everything is working:</p>
+
+            <div class="code">python -c "
+                from openai import AzureOpenAI
+                import os
+                from dotenv import load_dotenv
+
+                load_dotenv()
+                client = AzureOpenAI(
+                api_key=os.getenv('AZURE_OPENAI_API_KEY'),
+                api_version=os.getenv('AZURE_OPENAI_API_VERSION'),
+                azure_endpoint=os.getenv('AZURE_OPENAI_ENDPOINT')
+                )
+                response = client.chat.completions.create(
+                model=os.getenv('AZURE_OPENAI_CHAT_DEPLOYMENT'),
+                messages=[{\"role\": \"user\", \"content\": \"Say OK\"}]
+                )
+                print('✅ Azure connection successful:', response.choices[0].message.content)
+                "
+            </div>
+
+            <p><b>Expected output:</b> ✅ Azure connection successful: OK</p>
+
+            <p><b>Troubleshooting:</b></p>
+            <ul>
+                <li><b>401 Unauthorized:</b> Check API key is correct and not expired. Regenerate in Azure Portal if
+                    needed.</li>
+                <li><b>404 Not Found:</b> Check deployment names. Go to Model deployments and verify names match your
+                    .env.</li>
+                <li><b>Connection timeout:</b> Check your internet connection and Azure resource region.</li>
+            </ul>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>9. Why This Architecture Is Enterprise-Grade</h2>
+
+        <div class="card">
+
+            <table>
+
+                <tr>
+                    <th>Capability</th>
+                    <th>Benefit</th>
+                </tr>
+
+                <tr>
+                    <td>Separate vector DB per modality</td>
+                    <td>Higher retrieval accuracy</td>
+                </tr>
+
+                <tr>
+                    <td>Stable chunk IDs</td>
+                    <td>Supports updates + dedupe</td>
+                </tr>
+
+                <tr>
+                    <td>Structured vision output</td>
+                    <td>No hallucinated image reasoning</td>
+                </tr>
+
+                <tr>
+                    <td>Reranker stage</td>
+                    <td>Improves answer quality</td>
+                </tr>
+
+                <tr>
+                    <td>Trace logs</td>
+                    <td>Audit + debugging + compliance</td>
+                </tr>
+
+                <tr>
+                    <td>Cost estimator</td>
+                    <td>Enterprise budgeting visibility</td>
+                </tr>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <section>
+
+
+        <div class="card">
+
+            <ul>
+                <li>This is not a demo pipeline — it is production architecture.</li>
+                <li>Each modality is treated differently because information types differ.</li>
+                <li>Structured extraction drastically improves retrieval precision.</li>
+                <li>Enterprise RAG is an orchestration problem, not just embeddings.</li>
+                <li>Observability is mandatory for enterprise AI.</li>
+            </ul>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>10. Troubleshooting & FAQ</h2>
+
+        <div class="card">
+            <h3>Q: How do I verify .env is loaded correctly?</h3>
+            <p><b>A:</b> Run this command in your terminal:</p>
+            <div class="code">python -c "import os; from dotenv import load_dotenv; load_dotenv();
+                for k in ['AZURE_OPENAI_ENDPOINT', 'AZURE_OPENAI_API_KEY', 'AZURE_OPENAI_API_VERSION',
+                'AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT']:
+                print(f'{k}: {os.getenv(k)[:30] + \"...\" if os.getenv(k) else \"NOT SET\"}')
+                "</div>
+        </div>
+
+        <div class="card">
+            <h3>Q: I get "401 Access denied" error</h3>
+            <p><b>A:</b> Your Azure API key is invalid or expired. Fix it:</p>
+            <ol>
+                <li>Go to Azure Portal → Your OpenAI resource</li>
+                <li>Click <b>Keys and Endpoint</b></li>
+                <li>Click <b>Regenerate Key 1</b> (or Key 2)</li>
+                <li>Copy the new key and update your .env file</li>
+                <li>Run your script again</li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h3>Q: I get "404 Resource not found" error</h3>
+            <p><b>A:</b> The deployment name doesn't exist. Fix it:</p>
+            <ol>
+                <li>Go to Azure Portal → Your OpenAI resource</li>
+                <li>Click <b>Model deployments</b> in left sidebar</li>
+                <li>Check the exact names of your deployments</li>
+                <li>Update your .env file:
+                    <ul>
+                        <li><code>AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT=</code> (copy exact deployment name for embeddings)
+                        </li>
+                        <li><code>AZURE_OPENAI_VISION_DEPLOYMENT=</code> (copy exact deployment name for gpt-4o)</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h3>Q: How do I check if my Azure resource is still active?</h3>
+            <p><b>A:</b> Go to Azure Portal → Your resource → Overview. Look for status indicator. It should be green
+                ("Running"). If red or deleted, you'll need to create a new resource.</p>
+        </div>
+
+        <div class="card">
+            <h3>Q: Module X says "FileNotFoundError: docling_output not found"</h3>
+            <p><b>A:</b> You haven't run Module 1 (Read_File_Docling.py) yet. Run it first to extract documents. Also
+                check:
+            <ol>
+                <li>Set correct <code>INPUT_DIR</code> path in Read_File_Docling.py (search for "PUT YOUR PATH HERE")
+                </li>
+                <li>Put your documents (.pdf, .docx, etc.) in that folder</li>
+                <li>Run: <code>python Read_File_Docling.py</code></li>
+                <li>Wait for it to complete (check for <code>✅ Done</code> message)</li>
+                <li>Then run Module 2</li>
+            </ol>
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Q: How do I clear vector databases and re-index?</h3>
+            <p><b>A:</b> Delete the Chroma folders and re-run the indexing scripts:</p>
+            <div class="code"># Windows:
+                rmdir /s vector_db_text_chroma
+                rmdir /s vector_db_table_chroma
+                rmdir /s vector_db_image_vlm_chroma
+
+                # macOS/Linux:
+                rm -rf vector_db_text_chroma
+                rm -rf vector_db_table_chroma
+                rm -rf vector_db_image_vlm_chroma
+
+                # Then re-run modules 2-4
+                python Table_Embeddings_Langchain_vid.py
+                python Text_Embeddings_Langchain.py
+                python Image_VLM_Embeddings_Langchain_vid.py
+            </div>
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Q: Can I run just one module to test?</h3>
+            <p><b>A:</b> Yes, but with dependencies:
+            <ul>
+                <li><b>Module 1:</b> Independent. Can run alone.</li>
+                <li><b>Module 2, 3, 4:</b> Each requires Module 1 output first.</li>
+                <li><b>Module 5:</b> Requires Modules 2-4 output. Run all 3 before running Module 5.</li>
+            </ul>
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Q: A script hangs or times out. What do I do?</h3>
+            <p><b>A:</b> Common causes:
+            <ul>
+                <li><b>Large documents:</b> Docling can take a long time. Start with smaller documents (< 50
+                        pages).</li>
+                <li><b>API rate limits:</b> Azure OpenAI has rate limits. Wait 1-2 minutes and retry.</li>
+                <li><b>Network issues:</b> Check internet connection. Temporarily move closer to router.</li>
+                <li><b>Infinite loop:</b> If script doesn't progress after 5+ minutes, press Ctrl+C to stop. Then debug
+                    the script.</li>
+            </ul>
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Q: How do I install missing packages if I get import errors?</h3>
+            <p><b>A:</b> Uncomment the <code>!pip install</code> line at the top of each script and run it again. Or
+                manually:
+            <div class="code">pip install -r requirements.txt
+            </div>
+
+            If a specific package fails, install it individually. For example:
+            <div class="code">pip install langchain-openai
+                pip install docling
+                pip install sentence-transformers
+            </div>
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Q: My environment already exists (e.g., myenv310). How do I use it?</h3>
+            <p><b>A:</b> Activate it instead of creating new one:
+            <div class="code"># Conda:
+                conda activate myenv310
+
+                # OR venv:
+                myenv310\Scripts\activate # Windows
+                source myenv310/bin/activate # macOS/Linux
+
+                # Then install dependencies:
+                pip install -r requirements.txt
+            </div>
+            </p>
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>11. Final Takeaways</h2>
+
+        <div class="card">
+
+            <ul>
+                <li>Multimodal RAG is the future of enterprise knowledge systems.</li>
+                <li>Architecture matters more than model size.</li>
+                <li>Separation of modality pipelines is critical.</li>
+                <li>Deterministic systems are production-safe.</li>
+                <li>Logging + traceability = enterprise trust.</li>
+            </ul>
+
+        </div>
+
+    </section>
+
+    <div class="footer">
+        Enterprise Multimodal RAG Training Framework<br>
+        Designed for AI Engineering Teams
+    </div>
 
 </body>
+
 </html>
