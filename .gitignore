@@ -17,7 +17,9 @@ M3 /Lecture Material/
 
 # M4
 #M4/Lab Material/
-M4 /Lecture Material/
+M4/Lecture Material/
+M4/Lab Material/rag_semantic_chunking_faiss_azure_eval_RBAC_prompted.py
+
 
 # M5
 M5/Lab Material/
