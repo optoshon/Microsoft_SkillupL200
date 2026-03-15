@@ -1,0 +1,129 @@
+idx,question,ground_truth,prediction,rougeL_f1,sources,contexts_joined,user_input,retrieved_contexts,response,reference,answer_relevancy,context_precision,faithfulness,context_recall
+0,Within how many working days of the Date of Joining must an employee be enrolled under EPF and ESI?,Employees must be enrolled under EPF and ESI within 7 working days of the Date of Joining.,Employees shall be enrolled under EPF and ESI within 7 working days of the Date of Joining.,0.941176471,HR-POL-001_Employee_Onboarding_Policy.docx | HR-POL-009_Remote_Work_Policy.docx | HR-POL-003_Health_Benefits_Policy.docx,"4.2 Statutory Registration
+4.2.1 Employees shall be enrolled under EPF and ESI, as applicable, within 7 working days of DoJ.
+4.2.2 Delays beyond 14 days shall be escalated to the CFO and reported in the quarterly statutory compliance audit.
+
+---
+
+5. Work Hours and Availability
+
+5.1 Employees shall adhere to standard working hours defined in General Work Policy (HR-POL-007), Clause 4.1.
+5.2 Core availability hours shall be 10:00 AM to 5:00 PM IST on all working days.
+5.3 Attendance shall be recorded through the approved digital attendance and productivity systems.
+
+6. Information Security and Data Protection
+
+6.1 Mandatory use of:
+
+Company-issued devices only
+
+VPN with multi-factor authentication
+
+---
+
+2. Scope
+
+This policy applies to all confirmed employees of ABC Solutions Pvt. Ltd. across all grades and locations, and to their eligible dependents as defined herein. Employees covered mandatorily under the ESI Act shall primarily be governed by statutory benefits, with supplementary coverage as approved by the Chief Human Resources Officer (CHRO) and Chief Financial Officer (CFO).
+
+3. Definitions
+
+3.1
+
+Group Mediclaim Policy (GMC):",Within how many working days of the Date of Joining must an employee be enrolled under EPF and ESI?,"['4.2 Statutory Registration\n4.2.1 Employees shall be enrolled under EPF and ESI, as applicable, within 7 working days of DoJ.\n4.2.2 Delays beyond 14 days shall be escalated to the CFO and reported in the quarterly statutory compliance audit.', '5. Work Hours and Availability\n\n5.1 Employees shall adhere to standard working hours defined in General Work Policy (HR-POL-007), Clause 4.1.\n5.2 Core availability hours shall be 10:00 AM to 5:00 PM IST on all working days.\n5.3 Attendance shall be recorded through the approved digital attendance and productivity systems.\n\n6. Information Security and Data Protection\n\n6.1 Mandatory use of:\n\nCompany-issued devices only\n\nVPN with multi-factor authentication', '2. Scope\n\nThis policy applies to all confirmed employees of ABC Solutions Pvt. Ltd. across all grades and locations, and to their eligible dependents as defined herein. Employees covered mandatorily under the ESI Act shall primarily be governed by statutory benefits, with supplementary coverage as approved by the Chief Human Resources Officer (CHRO) and Chief Financial Officer (CFO).\n\n3. Definitions\n\n3.1\n\nGroup Mediclaim Policy (GMC):']",Employees shall be enrolled under EPF and ESI within 7 working days of the Date of Joining.,Employees must be enrolled under EPF and ESI within 7 working days of the Date of Joining.,0.758012414,1,1,1
+1,What happens if background verification adverse findings are not resolved within 30 days?,Unresolved adverse background verification findings within 30 days may result in suspension of employment under the Termination and Suspension Policy.,"Adverse findings not resolved within 30 days may result in suspension of employment under Termination and Suspension Policy (HR-POL-005), Clause 4.3.",0.727272727,HR-POL-001_Employee_Onboarding_Policy.docx | HR-POL-001_Employee_Onboarding_Policy.docx | HR-POL-003_Health_Benefits_Policy.docx,"4.3 Background Verification
+4.3.1 BGV shall be initiated on DoJ and completed within 15 calendar days.
+4.3.2 Adverse findings not resolved within 30 days may result in suspension of employment under Termination and Suspension Policy (HR-POL-005), Clause 4.3.
+
+---
+
+6. Non-Compliance and Corrective Actions
+
+6.1 Failure to complete statutory registration, BGV, or security clearance within prescribed timelines shall result in withholding of confirmation.
+6.2 Misrepresentation of credentials or suppression of material information shall constitute gross misconduct and may lead to termination under HR-POL-005, Clause 4.2.
+
+7. Cross-Policy Dependencies
+
+---
+
+6.2
+
+Reimbursement Claims
+
+6.2.1 Reimbursement claims shall be submitted within 30 days of discharge with complete documentation.
+6.2.2 The TPA shall settle admissible claims within 15 working days. Delays beyond 30 days shall be escalated to the CHRO and CFO.
+
+6.3
+
+Claim Rejection and Appeal",What happens if background verification adverse findings are not resolved within 30 days?,"['4.3 Background Verification\n4.3.1 BGV shall be initiated on DoJ and completed within 15 calendar days.\n4.3.2 Adverse findings not resolved within 30 days may result in suspension of employment under Termination and Suspension Policy (HR-POL-005), Clause 4.3.', '6. Non-Compliance and Corrective Actions\n\n6.1 Failure to complete statutory registration, BGV, or security clearance within prescribed timelines shall result in withholding of confirmation.\n6.2 Misrepresentation of credentials or suppression of material information shall constitute gross misconduct and may lead to termination under HR-POL-005, Clause 4.2.\n\n7. Cross-Policy Dependencies', '6.2\n\nReimbursement Claims\n\n6.2.1 Reimbursement claims shall be submitted within 30 days of discharge with complete documentation.\n6.2.2 The TPA shall settle admissible claims within 15 working days. Delays beyond 30 days shall be escalated to the CHRO and CFO.\n\n6.3\n\nClaim Rejection and Appeal']","Adverse findings not resolved within 30 days may result in suspension of employment under Termination and Suspension Policy (HR-POL-005), Clause 4.3.",Unresolved adverse background verification findings within 30 days may result in suspension of employment under the Termination and Suspension Policy.,0.60695777,1,1,1
+2,What is the minimum assessment score required to complete onboarding induction successfully?,A minimum assessment score of 70 percent is required for certification of onboarding induction completion.,A minimum assessment score of 70% is required for certification of completion.,0.888888889,HR-POL-001_Employee_Onboarding_Policy.docx | HR-POL-004_Training_and_Development_Policy.docx | HR-POL-004_Training_and_Development_Policy.docx,"4.5 Induction and Training
+4.5.1 Mandatory induction shall consist of a minimum of 16 hours of classroom sessions and 8 hours of e-learning within the first 14 days.
+4.5.2 A minimum assessment score of 70% is required for certification of completion.
+
+---
+
+6. Learning Records and Assessment
+
+6.1 All training participation, assessment scores, and certifications shall be recorded in the Learning Management System (LMS).
+6.2 Certification exams and post-training assessments shall require a minimum passing score of 70% unless otherwise specified by regulatory standards.
+6.3 Training effectiveness shall be evaluated annually using Kirkpatrick Level 1–3 metrics and linked to performance outcomes.
+
+7. Cross-Policy Dependencies
+
+7.1
+
+---
+
+5. Linkage to Performance and Career Progression
+
+5.1 Completion of mandatory training is a prerequisite for performance rating normalization under Performance Appraisal Policy (HR-POL-006), Clause 4.4.
+5.2 Promotion eligibility requires completion of all role-mandated certifications and leadership readiness programs as specified in HR-POL-006, Clause 5.3.
+5.3 Employees with repeated training non-compliance may be placed on corrective development plans or Performance Improvement Plans (PIP).",What is the minimum assessment score required to complete onboarding induction successfully?,"['4.5 Induction and Training\n4.5.1 Mandatory induction shall consist of a minimum of 16 hours of classroom sessions and 8 hours of e-learning within the first 14 days.\n4.5.2 A minimum assessment score of 70% is required for certification of completion.', '6. Learning Records and Assessment\n\n6.1 All training participation, assessment scores, and certifications shall be recorded in the Learning Management System (LMS).\n6.2 Certification exams and post-training assessments shall require a minimum passing score of 70% unless otherwise specified by regulatory standards.\n6.3 Training effectiveness shall be evaluated annually using Kirkpatrick Level 1–3 metrics and linked to performance outcomes.\n\n7. Cross-Policy Dependencies\n\n7.1', '5. Linkage to Performance and Career Progression\n\n5.1 Completion of mandatory training is a prerequisite for performance rating normalization under Performance Appraisal Policy (HR-POL-006), Clause 4.4.\n5.2 Promotion eligibility requires completion of all role-mandated certifications and leadership readiness programs as specified in HR-POL-006, Clause 5.3.\n5.3 Employees with repeated training non-compliance may be placed on corrective development plans or Performance Improvement Plans (PIP).']",A minimum assessment score of 70% is required for certification of completion.,A minimum assessment score of 70 percent is required for certification of onboarding induction completion.,0.715724144,1,1,1
+3,Which protected characteristics are covered under the Equal Opportunity Policy?,"Protected characteristics include gender, marital status, pregnancy, disability, age, religion, caste, ethnicity, sexual orientation, and other categories protected by law.","The protected characteristics covered under the Equal Opportunity Policy are gender, sex, marital status, pregnancy, disability, age, religion, caste, ethnicity, sexual orientation, and any other category protected under applicable law.",0.68,HR-POL-002_Equal_Opportunity_Policy.docx | HR-POL-002_Equal_Opportunity_Policy.docx | HR-POL-002_Equal_Opportunity_Policy.docx,"ABC Solutions Pvt. Ltd.
+
+ABC Solutions Pvt. Ltd.
+Document ID:
+
+HR-POL-002
+
+Version:
+
+1.0
+
+Effective Date:
+
+January 1, 2026
+
+Title:
+
+Equal Opportunity Policy
+
+Classification:
+
+Confidential – Internal Use Only
+
+1. Objective
+
+---
+
+3. Definitions
+
+3.1
+
+Protected Characteristics:
+
+Gender, sex, marital status, pregnancy, disability, age, religion, caste, ethnicity, sexual orientation, and any other category protected under applicable law.
+3.2
+
+Discrimination:
+
+Any distinction, exclusion, or preference that nullifies or impairs equality of opportunity or treatment in employment.
+3.3
+
+Harassment:
+
+Unwelcome conduct, whether verbal, physical, or visual, that creates a hostile or intimidating work environment.
+3.4
+
+---
+
+This policy establishes the commitment of ABC Solutions Pvt. Ltd. to provide equal opportunity in all aspects of employment and to prevent discrimination, harassment, and retaliation in compliance with Articles 14, 15, and 16 of the Constitution of India, the Rights of Persons with Disabilities Act, 2016, the Sexual Harassment of Women at Workplace (Prevention, Prohibition and Redressal) Act, 2013, and applicable labour laws",Which protected characteristics are covered under the Equal Opportunity Policy?,"['ABC Solutions Pvt. Ltd.\n\nABC Solutions Pvt. Ltd.\nDocument ID:\n\nHR-POL-002\n\nVersion:\n\n1.0\n\nEffective Date:\n\nJanuary 1, 2026\n\nTitle:\n\nEqual Opportunity Policy\n\nClassification:\n\nConfidential – Internal Use Only\n\n1. Objective', '3. Definitions\n\n3.1\n\nProtected Characteristics:\n\nGender, sex, marital status, pregnancy, disability, age, religion, caste, ethnicity, sexual orientation, and any other category protected under applicable law.\n3.2\n\nDiscrimination:\n\nAny distinction, exclusion, or preference that nullifies or impairs equality of opportunity or treatment in employment.\n3.3\n\nHarassment:\n\nUnwelcome conduct, whether verbal, physical, or visual, that creates a hostile or intimidating work environment.\n3.4', 'This policy establishes the commitment of ABC Solutions Pvt. Ltd. to provide equal opportunity in all aspects of employment and to prevent discrimination, harassment, and retaliation in compliance with Articles 14, 15, and 16 of the Constitution of India, the Rights of Persons with Disabilities Act, 2016, the Sexual Harassment of Women at Workplace (Prevention, Prohibition and Redressal) Act, 2013, and applicable labour laws']","The protected characteristics covered under the Equal Opportunity Policy are gender, sex, marital status, pregnancy, disability, age, religion, caste, ethnicity, sexual orientation, and any other category protected under applicable law.","Protected characteristics include gender, marital status, pregnancy, disability, age, religion, caste, ethnicity, sexual orientation, and other categories protected by law.",0.965978815,0.5,1,1

@@ -1,0 +1,32 @@
+
+
+[1] source=HR-POL-001_Employee_Onboarding_Policy.docx | faiss_distance=0.443797 | rerank=None
+4.2 Statutory Registration
+4.2.1 Employees shall be enrolled under EPF and ESI, as applicable, within 7 working days of DoJ.
+4.2.2 Delays beyond 14 days shall be escalated to the CFO and reported in the quarterly statutory compliance audit.--------------------------------------------------------------------------------
+
+[2] source=HR-POL-009_Remote_Work_Policy.docx | faiss_distance=1.074160 | rerank=None
+5. Work Hours and Availability
+
+5.1 Employees shall adhere to standard working hours defined in General Work Policy (HR-POL-007), Clause 4.1.
+5.2 Core availability hours shall be 10:00 AM to 5:00 PM IST on all working days.
+5.3 Attendance shall be recorded through the approved digital attendance and productivity systems.
+
+6. Information Security and Data Protection
+
+6.1 Mandatory use of:
+
+Company-issued devices only
+
+VPN with multi-factor authentication--------------------------------------------------------------------------------
+
+[3] source=HR-POL-003_Health_Benefits_Policy.docx | faiss_distance=1.079295 | rerank=None
+2. Scope
+
+This policy applies to all confirmed employees of ABC Solutions Pvt. Ltd. across all grades and locations, and to their eligible dependents as defined herein. Employees covered mandatorily under the ESI Act shall primarily be governed by statutory benefits, with supplementary coverage as approved by the Chief Human Resources Officer (CHRO) and Chief Financial Officer (CFO).
+
+3. Definitions
+
+3.1
+
+Group Mediclaim Policy (GMC):

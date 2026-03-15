@@ -1,0 +1,11 @@
+{
+  "question": "What happens if background verification adverse findings are not resolved within 30 days?",
+  "ground_truth": "Unresolved adverse background verification findings within 30 days may result in suspension of employment under the Termination and Suspension Policy.",
+  "prediction": "Adverse findings not resolved within 30 days may result in suspension of employment under Termination and Suspension Policy (HR-POL-005), Clause 4.3.",
+  "rougeL_f1": 0.7272727272727272,
+  "sources": [
+    "HR-POL-001_Employee_Onboarding_Policy.docx",
+    "HR-POL-001_Employee_Onboarding_Policy.docx",
+    "HR-POL-003_Health_Benefits_Policy.docx"
+  ]
+}

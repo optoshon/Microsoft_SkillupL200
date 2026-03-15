@@ -1,0 +1,11 @@
+{
+  "question": "What is the minimum assessment score required to complete onboarding induction successfully?",
+  "ground_truth": "A minimum assessment score of 70 percent is required for certification of onboarding induction completion.",
+  "prediction": "A minimum assessment score of 70% is required for certification of completion.",
+  "rougeL_f1": 0.888888888888889,
+  "sources": [
+    "HR-POL-001_Employee_Onboarding_Policy.docx",
+    "HR-POL-004_Training_and_Development_Policy.docx",
+    "HR-POL-004_Training_and_Development_Policy.docx"
+  ]
+}

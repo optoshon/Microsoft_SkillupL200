@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Enterprise Multimodal RAG Pipeline — Training Guide</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Segoe UI,Roboto,Arial;
+    background:#0f172a;
+    color:#e5e7eb;
+}
+header{
+    background:linear-gradient(90deg,#1e3a8a,#7c3aed);
+    padding:30px;
+    text-align:center;
+}
+h1{margin:0;font-size:34px}
+h2{color:#93c5fd;border-bottom:2px solid #334155;padding-bottom:6px}
+h3{color:#c4b5fd}
+section{padding:35px 8%}
+.card{
+    background:#111827;
+    padding:20px;
+    border-radius:14px;
+    margin:18px 0;
+    box-shadow:0 0 15px rgba(0,0,0,.4);
+}
+.code{
+    background:#020617;
+    padding:14px;
+    border-radius:10px;
+    font-family:monospace;
+    color:#7dd3fc;
+    white-space:pre-wrap;
+}
+.flow{
+    background:#020617;
+    padding:18px;
+    border-radius:14px;
+    text-align:center;
+    font-size:18px;
+}
+.tag{
+    display:inline-block;
+    padding:6px 12px;
+    margin:5px;
+    border-radius:8px;
+    background:#1f2937;
+    color:#93c5fd;
+}
+table{
+    border-collapse:collapse;
+    width:100%;
+}
+th,td{
+    border:1px solid #334155;
+    padding:10px;
+}
+th{
+    background:#1e293b;
+}
+.highlight{
+    color:#34d399;
+    font-weight:bold;
+}
+.footer{
+    text-align:center;
+    padding:40px;
+    font-size:14px;
+    color:#94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Enterprise Multimodal RAG Pipeline</h1>
+<p>Architecture • Execution Order • Production Design</p>
+</header>
+
+<section>
+
+<h2>1. Environment Setup</h2>
+
+<div class="card">
+<h3>Create Stable Python Environment (Conda)</h3>
+<div class="code">conda create -n multimodal_rag python=3.10
+conda activate multimodal_rag</div>
+
+<h3>Install Dependencies</h3>
+<div class="code">pip install -r requirements.txt</div>
+
+<p>Requirements include vector DB, embeddings, doc parsing, OCR, reranking and multimodal processing.</p>
+</div>
+
+</section>
+
+<section>
+
+<h2>2. Business Use Case</h2>
+
+<div class="card">
+<p>This pipeline enables enterprises to build a <span class="highlight">Unified Knowledge Intelligence System</span> capable of querying:</p>
+
+<ul>
+<li>Documents</li>
+<li>Tables</li>
+<li>Images</li>
+<li>Charts</li>
+<li>Scanned files</li>
+</ul>
+
+<p>Typical production scenarios:</p>
+
+<ul>
+<li>Enterprise policy assistant</li>
+<li>Financial report analyst</li>
+<li>Engineering document search</li>
+<li>Legal compliance assistant</li>
+<li>Knowledge-base copilots</li>
+</ul>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>3. End-to-End Execution Flow</h2>
+
+<div class="flow">
+
+INPUT FILES  
+↓  
+Read_File_Docling.py  
+↓  
+Text / Tables / Images Extracted  
+↓  
+Embedding Pipelines (Parallel)
+
+<br><br>
+
+Text_Embeddings → Vector DB  
+Tables_Embeddings → Vector DB  
+Image_VLM_Embeddings → Vector DB  
+
+<br><br>
+
+↓  
+Multimodal_Ensemble_Retriever  
+↓  
+Enterprise Answer Generation
+
+</div>
+
+</section>
+
+<section>
+
+<h2>4. Execution Order (Mandatory)</h2>
+
+<div class="card">
+
+<table>
+<tr><th>Order</th><th>Script</th><th>Purpose</th></tr>
+
+<tr>
+<td>1</td>
+<td>Read_File_Docling.py</td>
+<td>Extract text, tables, images from documents</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>Table_Embeddings_Langchain_vid.py</td>
+<td>Create structured embeddings from tables</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>Text_Embeddings_Langchain.py</td>
+<td>Chunk + embed document text</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>Image_VLM_Embeddings_Langchain_vid.py</td>
+<td>Convert images → structured JSON → embeddings</td>
+</tr>
+
+<tr>
+<td>5</td>
+<td>Multimodal_Ensemble_Retriever_Enterprise.py</td>
+<td>Unified search + rerank + LLM answer</td>
+</tr>
+
+</table>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>5. Module Deep Dive</h2>
+
+<div class="card">
+<h3>Module 1 — Document Extraction</h3>
+<p><b>Script:</b> Read_File_Docling.py</p>
+
+<ul>
+<li>Reads enterprise documents</li>
+<li>Extracts text blocks</li>
+<li>Extracts tables → CSV + SQLite</li>
+<li>Extracts images → PNG</li>
+<li>Generates manifest JSON</li>
+</ul>
+
+<p><b>Enterprise Advantage:</b> Structured knowledge extraction across formats.</p>
+</div>
+
+
+<div class="card">
+<h3>Module 2 — Table Intelligence Engine</h3>
+<p><b>Script:</b> Table_Embeddings_Langchain_vid.py</p>
+
+<ul>
+<li>Reads CSV tables</li>
+<li>Chunks rows intelligently</li>
+<li>Adds metadata context headers</li>
+<li>Embeds table meaning</li>
+<li>Stores in vector DB</li>
+</ul>
+
+<p><b>Why special logic?</b><br>
+Tables contain relational meaning not captured by plain text embeddings.</p>
+</div>
+
+
+<div class="card">
+<h3>Module 3 — Text Intelligence Engine</h3>
+<p><b>Script:</b> Text_Embeddings_Langchain.py</p>
+
+<ul>
+<li>Loads extracted DOCX</li>
+<li>Chunks text recursively</li>
+<li>Generates stable chunk IDs</li>
+<li>Embeds semantic meaning</li>
+<li>Stores in vector database</li>
+</ul>
+
+<p><b>Enterprise value:</b> Precise semantic search across thousands of documents.</p>
+
+</div>
+
+
+<div class="card">
+<h3>Module 4 — Image Intelligence Engine</h3>
+<p><b>Script:</b> Image_VLM_Embeddings_Langchain_vid.py</p>
+
+<ul>
+<li>Reads extracted figures</li>
+<li>Sends image to Vision LLM</li>
+<li>Forces structured JSON interpretation</li>
+<li>Embeds interpretation text</li>
+<li>Stores embeddings</li>
+</ul>
+
+<p><b>Example extracted intelligence:</b></p>
+
+<ul>
+<li>Flowchart meaning</li>
+<li>Org chart hierarchy</li>
+<li>Chart values</li>
+<li>Diagram relationships</li>
+</ul>
+
+</div>
+
+
+<div class="card">
+<h3>Module 5 — Enterprise Multimodal Retriever</h3>
+<p><b>Script:</b> Multimodal_Ensemble_Retriever_Enterprise.py</p>
+
+
+<ul>
+<li>Queries all vector databases</li>
+<li>Returns top results per modality</li>
+<li>Merges + ranks results</li>
+<li>Removes duplicates</li>
+<li>Optional cross-encoder reranking</li>
+<li>Builds structured context</li>
+<li>Generates LLM answer</li>
+<li>Saves trace logs + outputs</li>
+</ul>
+
+<p><b>Production Strength:</b></p>
+<ul>
+<li>Observability logs</li>
+<li>Cost estimation hooks</li>
+<li>Audit artifacts</li>
+<li>Deterministic ranking</li>
+</ul>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>6. Architecture Principles Used</h2>
+
+<div class="card">
+
+<span class="tag">Modular Design</span>
+<span class="tag">Deterministic Retrieval</span>
+<span class="tag">No Silent Failures</span>
+<span class="tag">Traceability</span>
+<span class="tag">Enterprise Logging</span>
+<span class="tag">Stable IDs</span>
+<span class="tag">Vector Isolation Per Modality</span>
+
+</div>
+
+</section>
+
+<section>
+
+<h2>7. Production Architecture Diagram (Logical)</h2>
+
+<div class="flow">
+
+Documents → Extraction Engine  
+↓  
+Multimodal Indexing Layer  
+↓  
+Vector Databases  
+(Text | Tables | Images | OCR)  
+↓  
+Retriever Engine  
+↓  
+Reranker  
+↓  
+LLM  
+↓  
+Final Answer + Trace Logs
+
+</div>
+
+</section>
+
+<section>
+
+<h2>8. Why This Architecture Is Enterprise-Grade</h2>
+
+<div class="card">
+
+<table>
+
+<tr><th>Capability</th><th>Benefit</th></tr>
+
+<tr>
+<td>Separate vector DB per modality</td>
+<td>Higher retrieval accuracy</td>
+</tr>
+
+<tr>
+<td>Stable chunk IDs</td>
+<td>Supports updates + dedupe</td>
+</tr>
+
+<tr>
+<td>Structured vision output</td>
+<td>No hallucinated image reasoning</td>
+</tr>
+
+<tr>
+<td>Reranker stage</td>
+<td>Improves answer quality</td>
+</tr>
+
+<tr>
+<td>Trace logs</td>
+<td>Audit + debugging + compliance</td>
+</tr>
+
+<tr>
+<td>Cost estimator</td>
+<td>Enterprise budgeting visibility</td>
+</tr>
+
+</table>
+
+</div>
+
+</section>
+
+<section>
+
+
+<div class="card">
+
+<ul>
+<li>This is not a demo pipeline — it is production architecture.</li>
+<li>Each modality is treated differently because information types differ.</li>
+<li>Structured extraction drastically improves retrieval precision.</li>
+<li>Enterprise RAG is an orchestration problem, not just embeddings.</li>
+<li>Observability is mandatory for enterprise AI.</li>
+</ul>
+
+</div>
+
+</section>
+
+<section>
+
+<h2> Final Takeaways</h2>
+
+<div class="card">
+
+<ul>
+<li>Multimodal RAG is the future of enterprise knowledge systems.</li>
+<li>Architecture matters more than model size.</li>
+<li>Separation of modality pipelines is critical.</li>
+<li>Deterministic systems are production-safe.</li>
+<li>Logging + traceability = enterprise trust.</li>
+</ul>
+
+</div>
+
+</section>
+
+<div class="footer">
+Enterprise Multimodal RAG Training Framework<br>
+Designed for AI Engineering Teams
+</div>
+
+</body>
+</html>

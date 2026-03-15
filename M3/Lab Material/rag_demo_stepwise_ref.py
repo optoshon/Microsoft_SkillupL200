@@ -13,7 +13,6 @@ from sentence_transformers import SentenceTransformer
 from langchain_community.document_loaders import PyPDFLoader, CSVLoader, Docx2txtLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-!pip install torch transformers sentence-transformers langchain-community langchain langchain-text-splitters python-dotenv
 print("done")
 
 
