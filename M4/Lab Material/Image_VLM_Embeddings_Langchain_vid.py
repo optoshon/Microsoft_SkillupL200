@@ -89,10 +89,14 @@ from langchain_chroma import Chroma
 # =========================
 
 # PUT YOUR PATH HERE: Where Module 1 (Read_File_Docling.py) saved extracted images
-DOCLING_OUTPUT_DIR = Path("docling_output")
+DOCLING_OUTPUT_DIR = Path(
+    r"C:\Users\shonr\OneDrive - Tekframeworks\Training\Microsoft\Microsoft_SkillupL200\M4\Lab Material\docling_output")
+
 
 # PUT YOUR PATH HERE: Where to save Chroma vector database for images (separate from text/table DBs)
-PERSIST_DIR = Path("vector_db_image_vlm_chroma")
+
+PERSIST_DIR = Path(
+    r"C:\Users\shonr\OneDrive - Tekframeworks\Training\Microsoft\Microsoft_SkillupL200\M4\Lab Material\vector_image_vlm_chroma")
 
 COLLECTION_NAME = "image_vlm_chunks_v1"
 
@@ -114,8 +118,8 @@ def _stable_id(*parts: str) -> str:
 
 def _require_env() -> Dict[str, str]:
     # PUT YOUR PATH HERE: Location of .env file with Azure OpenAI credentials
-    load_dotenv(dotenv_path=Path(".env"), override=False)
-
+    load_dotenv(dotenv_path=Path(
+        r"C:\Users\shonr\OneDrive - Tekframeworks\Secret_keys\.env"), override=False)
     required = [
         "AZURE_OPENAI_ENDPOINT",
         "AZURE_OPENAI_API_KEY",
@@ -210,7 +214,8 @@ Rules:
     try:
         return json.loads(content)
     except json.JSONDecodeError as e:
-        raise RuntimeError(f"Vision model did not return valid JSON.\nRaw:\n{content}") from e
+        raise RuntimeError(
+            f"Vision model did not return valid JSON.\nRaw:\n{content}") from e
 
 
 def main():
@@ -263,14 +268,15 @@ def main():
         )
 
         # Save sidecar JSON for audit
-        sidecar = img_path.with_suffix(img_path.suffix + f".{PROMPT_VERSION}.json")
-        sidecar.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        sidecar = img_path.with_suffix(
+            img_path.suffix + f".{PROMPT_VERSION}.json")
+        sidecar.write_text(json.dumps(
+            payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
         # Embed JSON-as-text (stable, structured)
         text_for_embedding = json.dumps(payload, ensure_ascii=False, indent=2)
 
         vid = _stable_id(doc_id, figure_id, PROMPT_VERSION)
-
 
         meta = {
             "doc_id": doc_id,
@@ -316,7 +322,8 @@ def main():
     print("\nTop-3 VLM hits for:", q)
     for j, h in enumerate(hits, start=1):
         print(f"\n--- Hit {j} ---")
-        print("meta:", {k: h.metadata.get(k) for k in ["doc_id", "figure_id", "vlm_type", "source_image"]})
+        print("meta:", {k: h.metadata.get(k)
+              for k in ["doc_id", "figure_id", "vlm_type", "source_image"]})
         print("preview:", h.page_content[:300].replace("\n", " "))
 
 

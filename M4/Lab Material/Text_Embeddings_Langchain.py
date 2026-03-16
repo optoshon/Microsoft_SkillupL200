@@ -68,13 +68,23 @@
 # =========================
 # 1) Config (edit only here)
 # =========================
+from langchain_chroma import Chroma
+from langchain_openai import AzureOpenAIEmbeddings
+import hashlib
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document as LCDocument
+from docx import Document as DocxDocument
+from dotenv import load_dotenv
+import os
 from pathlib import Path
 
-# PUT YOUR PATH HERE: Where Module 1 (Read_File_Docling.py) saved extracted documents
-DOCLING_OUTPUT_DIR = Path("C:\\Users\\srika\\Documents\\Microsoft_19jan\\MS_NOIDA_FEB\\M4 packet\\docling_output")
+# PUT YOUR PATH HERE: Where Module 1 (Read_File_Docling.py) saved extracted tables
+DOCLING_OUTPUT_DIR = Path(
+    r"C:\Users\shonr\OneDrive - Tekframeworks\Training\Microsoft\Microsoft_SkillupL200\M4\Lab Material\docling_output")
 
-# PUT YOUR PATH HERE: Where to save Chroma vector database for text (separate from table/image DBs)
-PERSIST_DIR = Path("C:\\Users\\srika\\Documents\\Microsoft_19jan\\MS_NOIDA_FEB\\M4 packet\\vector_db_text_chroma")
+# PUT YOUR PATH HERE: Where to save Chroma vector database for tables (separate from text/image DBs)
+PERSIST_DIR = Path(
+    r"C:\Users\shonr\OneDrive - Tekframeworks\Training\Microsoft\Microsoft_SkillupL200\M4\Lab Material\vector_db_text_chroma")
 
 COLLECTION_NAME = "text_chunks_v1"
 
@@ -89,11 +99,10 @@ MAX_DOCS = None
 # =========================
 # 2) Load .env (NO FALLBACKS)
 # =========================
-import os
-from dotenv import load_dotenv
 
 # PUT YOUR PATH HERE: Location of .env file with Azure OpenAI credentials
-load_dotenv(dotenv_path=Path(".env"), override=False)
+load_dotenv(dotenv_path=Path(
+    r"C:\Users\shonr\OneDrive - Tekframeworks\Secret_keys\.env"), override=False)
 
 REQUIRED_ENV_VARS = [
     "AZURE_OPENAI_ENDPOINT",
@@ -122,8 +131,7 @@ AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT = os.environ["AZURE_OPENAI_EMBEDDINGS_DEPLOYM
 # =========================
 # 3) Read Docling-extracted DOCX files
 # =========================
-from docx import Document as DocxDocument
-from langchain_core.documents import Document as LCDocument
+
 
 def read_docx_text(docx_path: Path) -> str:
     doc = DocxDocument(docx_path)
@@ -134,9 +142,11 @@ def read_docx_text(docx_path: Path) -> str:
             parts.append(t)
     return "\n\n".join(parts).strip()
 
+
 def find_docling_docx_files(root: Path) -> list[Path]:
     # Expected structure: docling_output/<doc_id>/text/<doc_id>.docx
     return sorted(root.glob("*/text/*.docx"))
+
 
 docx_files = find_docling_docx_files(DOCLING_OUTPUT_DIR)
 if not docx_files:
@@ -167,14 +177,14 @@ for p in docx_files:
     )
 
 if not base_docs:
-    raise RuntimeError("All DOCX files were empty after reading. Nothing to index.")
+    raise RuntimeError(
+        "All DOCX files were empty after reading. Nothing to index.")
 
 print(f"Loaded {len(base_docs)} documents from Docling output.")
 
 # =========================
 # 4) Chunk using LangChain
 # =========================
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 splitter = RecursiveCharacterTextSplitter(
     chunk_size=CHUNK_SIZE,
@@ -187,11 +197,12 @@ if not chunked_docs:
     raise RuntimeError("Chunking produced 0 chunks. Check your inputs/config.")
 
 # Add stable IDs (useful later for upserts / tracking)
-import hashlib
+
 
 def stable_chunk_id(d: LCDocument, chunk_idx: int) -> str:
-    base = f"{d.metadata.get('doc_id','')}::{d.metadata.get('source_docx','')}::{chunk_idx}::{d.page_content}"
+    base = f"{d.metadata.get('doc_id', '')}::{d.metadata.get('source_docx', '')}::{chunk_idx}::{d.page_content}"
     return hashlib.sha256(base.encode("utf-8")).hexdigest()[:24]
+
 
 for i, d in enumerate(chunked_docs, start=1):
     d.metadata["chunk_index_global"] = i
@@ -203,7 +214,6 @@ print(f"Created {len(chunked_docs)} chunks.")
 # =========================
 # 5) Embeddings (Azure OpenAI) from .env
 # =========================
-from langchain_openai import AzureOpenAIEmbeddings
 
 embeddings = AzureOpenAIEmbeddings(
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
@@ -215,7 +225,6 @@ embeddings = AzureOpenAIEmbeddings(
 # =========================
 # 6) Persist to a local Chroma vector DB
 # =========================
-from langchain_chroma import Chroma
 
 PERSIST_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -244,5 +253,6 @@ hits = vectorstore.similarity_search(query, k=3)
 print("\nTop-3 hits:")
 for j, h in enumerate(hits, start=1):
     print(f"\n--- Hit {j} ---")
-    print("metadata:", {k: h.metadata[k] for k in ["doc_id", "chunk_uid", "source_docx"] if k in h.metadata})
+    print("metadata:", {k: h.metadata[k] for k in [
+          "doc_id", "chunk_uid", "source_docx"] if k in h.metadata})
     print("text preview:", h.page_content[:300].replace("\n", " "))

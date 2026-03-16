@@ -111,16 +111,20 @@ from langchain_core.documents import Document
 
 # PUT YOUR PATH HERE: Vector database folders (from Modules 2-4)
 # These should match the PERSIST_DIR paths from Table/Text/Image embedding scripts
-TEXT_DB_DIR   = Path("vector_db_text_chroma")      # From Module 3: Text_Embeddings_Langchain.py
-TABLE_DB_DIR  = Path("vector_db_table_chroma")     # From Module 2: Table_Embeddings_Langchain_vid.py
-VLM_DB_DIR    = Path("vector_db_image_vlm_chroma") # From Module 4: Image_VLM_Embeddings_Langchain_vid.py
+# From Module 3: Text_Embeddings_Langchain.py
+TEXT_DB_DIR = Path("vector_db_text_chroma")
+# From Module 2: Table_Embeddings_Langchain_vid.py
+TABLE_DB_DIR = Path("vector_db_table_chroma")
+# From Module 4: Image_VLM_Embeddings_Langchain_vid.py
+VLM_DB_DIR = Path("vector_db_image_vlm_chroma")
 
-TEXT_COLLECTION  = "text_chunks_v1"
+TEXT_COLLECTION = "text_chunks_v1"
 TABLE_COLLECTION = "table_chunks_v1"
-VLM_COLLECTION   = "image_vlm_chunks_v1"
+VLM_COLLECTION = "image_vlm_chunks_v1"
 
 # Retrieval parameters
-TOP_K_PER_MODALITY = 4  # How many results to retrieve per modality (text, table, image)
+# How many results to retrieve per modality (text, table, image)
+TOP_K_PER_MODALITY = 4
 FINAL_CONTEXT_K = 7     # Final number of chunks to send to LLM
 
 # PUT YOUR PATH HERE: Where to save query outputs and results
@@ -206,8 +210,10 @@ def estimate_cost(cfg: CostConfig, stage: str, input_tokens: Optional[int], outp
         if cfg.embed_cost_per_1k_input is None:
             out["note"] = "Embedding costs not configured."
             return out
-        out["rates_used"] = {"embed_cost_per_1k_input": cfg.embed_cost_per_1k_input}
-        out["cost_usd"] = (input_tokens or 0) / 1000.0 * cfg.embed_cost_per_1k_input
+        out["rates_used"] = {
+            "embed_cost_per_1k_input": cfg.embed_cost_per_1k_input}
+        out["cost_usd"] = (input_tokens or 0) / 1000.0 * \
+            cfg.embed_cost_per_1k_input
         return out
 
     if stage == "vlm":
@@ -244,7 +250,8 @@ def write_text(path: Path, text: str) -> None:
 
 
 def write_json(path: Path, obj: Any) -> None:
-    path.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
+    path.write_text(json.dumps(obj, ensure_ascii=False,
+                    indent=2), encoding="utf-8")
 
 
 def write_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
@@ -263,7 +270,8 @@ def write_csv(path: Path, rows: List[Dict[str, Any]]) -> None:
 # ========================
 def require_env() -> None:
     # PUT YOUR PATH HERE: Location of .env file with Azure OpenAI credentials
-    load_dotenv()
+    load_dotenv(dotenv_path=Path(
+        r"C:\Users\shonr\OneDrive - Tekframeworks\Secret_keys\.env"), override=False)
     for k in [
         "AZURE_OPENAI_ENDPOINT",
         "AZURE_OPENAI_API_KEY",
@@ -312,7 +320,8 @@ def render_chunk(doc: Document) -> str:
     modality = md.get("modality", "unknown")
 
     # Prefer stable IDs if present in metadata; otherwise show "N/A"
-    chunk_id = md.get("chunk_uid") or md.get("vector_id") or md.get("id") or "N/A"
+    chunk_id = md.get("chunk_uid") or md.get(
+        "vector_id") or md.get("id") or "N/A"
     doc_id = md.get("doc_id", "N/A")
 
     header = (
@@ -333,8 +342,11 @@ def render_chunk(doc: Document) -> str:
             lines = [
                 header,
                 f"summary: {summary}".strip(),
-                "key_text: " + "; ".join(key_text[:10]) if key_text else "key_text: (none)",
-                "warnings: " + "; ".join(warnings[:5]) if warnings else "warnings: (none)",
+                "key_text: " +
+                "; ".join(key_text[:10]) if key_text else "key_text: (none)",
+                "warnings: " +
+                "; ".join(
+                    warnings[:5]) if warnings else "warnings: (none)",
             ]
             return "\n".join(lines)
         except Exception:
@@ -362,12 +374,14 @@ def fingerprint(doc: Document) -> str:
             return f"{key}::{md[key]}"
 
     # Next: doc+anchor if present
-    anchor = md.get("table_id") or md.get("figure_id") or md.get("source_csv") or md.get("source_image")
+    anchor = md.get("table_id") or md.get("figure_id") or md.get(
+        "source_csv") or md.get("source_image")
     if md.get("doc_id") and anchor:
         return f"anchor::{md['doc_id']}::{anchor}"
 
     # Fallback: normalized text hash (still deterministic)
-    h = hashlib.sha256(normalize_text(doc.page_content).encode("utf-8")).hexdigest()[:16]
+    h = hashlib.sha256(normalize_text(
+        doc.page_content).encode("utf-8")).hexdigest()[:16]
     return f"texthash::{h}"
 
 
@@ -422,21 +436,27 @@ def ensemble_retrieve(query: str, embeddings) -> List[Document]:
     Retrieves with scores from each modality, merges deterministically by score.
     NOTE: We do NOT silently fall back to score-less retrieval; if scores are unavailable, raise.
     """
-    text_vs  = load_vectorstore(TEXT_DB_DIR,  TEXT_COLLECTION,  embeddings)
+    text_vs = load_vectorstore(TEXT_DB_DIR,  TEXT_COLLECTION,  embeddings)
     table_vs = load_vectorstore(TABLE_DB_DIR, TABLE_COLLECTION, embeddings)
-    ocr_vs   = load_vectorstore(OCR_DB_DIR,   OCR_COLLECTION,   embeddings)
-    vlm_vs   = load_vectorstore(VLM_DB_DIR,   VLM_COLLECTION,   embeddings)
+    # ocr_vs = load_vectorstore(OCR_DB_DIR,   OCR_COLLECTION,   embeddings)
+    vlm_vs = load_vectorstore(VLM_DB_DIR,   VLM_COLLECTION,   embeddings)
 
     # Chroma returns (Document, distance) in similarity_search_with_score.
     # Smaller distance typically means closer match.
-    text_hits  = tag_results_scored(text_vs.similarity_search_with_score(query, k=TOP_K_PER_MODALITY),  "text")
-    table_hits = tag_results_scored(table_vs.similarity_search_with_score(query, k=TOP_K_PER_MODALITY), "table")
-    ocr_hits   = tag_results_scored(ocr_vs.similarity_search_with_score(query, k=TOP_K_PER_MODALITY),   "image_ocr")
-    vlm_hits   = tag_results_scored(vlm_vs.similarity_search_with_score(query, k=TOP_K_PER_MODALITY),   "image_vlm")
+    text_hits = tag_results_scored(text_vs.similarity_search_with_score(
+        query, k=TOP_K_PER_MODALITY),  "text")
+    table_hits = tag_results_scored(
+        table_vs.similarity_search_with_score(query, k=TOP_K_PER_MODALITY), "table")
+    # ocr_hits = tag_results_scored(ocr_vs.similarity_search_with_score(
+    # query, k=TOP_K_PER_MODALITY),   "image_ocr")
+    vlm_hits = tag_results_scored(vlm_vs.similarity_search_with_score(
+        query, k=TOP_K_PER_MODALITY),   "image_vlm")
 
-    all_hits = text_hits + table_hits + ocr_hits + vlm_hits
+    # all_hits = text_hits + table_hits + ocr_hits + vlm_hits
+    all_hits = text_hits + table_hits + vlm_hits
 
-    merged = sorted(all_hits, key=lambda d: d.metadata.get("retrieval_score", 1e9))
+    merged = sorted(all_hits, key=lambda d: d.metadata.get(
+        "retrieval_score", 1e9))
     return merged[:FINAL_CONTEXT_K]
 # ========================
 
@@ -458,7 +478,8 @@ def build_context_block(docs: List[Document]) -> str:
     blocks: List[str] = []
     for i, d in enumerate(docs, 1):
         meta = d.metadata or {}
-        chunk_id = meta.get("chunk_uid") or meta.get("vector_id") or meta.get("id") or "N/A"
+        chunk_id = meta.get("chunk_uid") or meta.get(
+            "vector_id") or meta.get("id") or "N/A"
         header = (
             f"[{i}] chunk_id={chunk_id} | modality={meta.get('modality')} | "
             f"doc_id={meta.get('doc_id')} | source={_source_hint(meta)} | "
@@ -526,9 +547,11 @@ def main() -> None:
             })
 
         write_csv(run_dir / "retrieval_raw.csv", retrieval_rows)
-        write_text(run_dir / "retrieval_raw.txt", "\n\n".join(render_chunk(d) for d in hits))
+        write_text(run_dir / "retrieval_raw.txt",
+                   "\n\n".join(render_chunk(d) for d in hits))
 
-        LOG.info("Retrieved raw=%d in %.3fs. Outputs: %s", len(hits), (t_retr1 - t_retr0), run_dir)
+        LOG.info("Retrieved raw=%d in %.3fs. Outputs: %s",
+                 len(hits), (t_retr1 - t_retr0), run_dir)
 
         # ---- Deduplication ----
         removed: List[Dict[str, Any]] = []
@@ -537,7 +560,8 @@ def main() -> None:
             hits, removed = dedupe_docs(hits)
             t_dd1 = time.perf_counter()
             write_json(run_dir / "dedupe_removed.json", removed)
-            LOG.info("Deduped kept=%d removed=%d in %.3fs", len(hits), len(removed), (t_dd1 - t_dd0))
+            LOG.info("Deduped kept=%d removed=%d in %.3fs",
+                     len(hits), len(removed), (t_dd1 - t_dd0))
 
         # ---- Optional reranking ----
         if ENABLE_RERANK:
@@ -549,7 +573,8 @@ def main() -> None:
                 top_k=RERANK_TOP_K,
             )
             t_rr1 = time.perf_counter()
-            LOG.info("Reranked top_k=%d in %.3fs using %s", RERANK_TOP_K, (t_rr1 - t_rr0), RERANK_MODEL_NAME)
+            LOG.info("Reranked top_k=%d in %.3fs using %s",
+                     RERANK_TOP_K, (t_rr1 - t_rr0), RERANK_MODEL_NAME)
 
         # ---- Build context + prompt ----
         t_ctx0 = time.perf_counter()
@@ -577,9 +602,12 @@ def main() -> None:
 
         # ---- Token usage & cost placeholders ----
         # Not all wrappers expose token usage consistently; we do not guess.
-        chat_cost = estimate_cost(COST_CFG, stage="chat", input_tokens=None, output_tokens=None)
-        embed_cost = estimate_cost(COST_CFG, stage="embeddings", input_tokens=None, output_tokens=None)
-        vlm_cost = estimate_cost(COST_CFG, stage="vlm", input_tokens=None, output_tokens=None)
+        chat_cost = estimate_cost(
+            COST_CFG, stage="chat", input_tokens=None, output_tokens=None)
+        embed_cost = estimate_cost(
+            COST_CFG, stage="embeddings", input_tokens=None, output_tokens=None)
+        vlm_cost = estimate_cost(
+            COST_CFG, stage="vlm", input_tokens=None, output_tokens=None)
 
         trace = {
             "query": query,
