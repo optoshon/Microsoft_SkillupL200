@@ -13,11 +13,11 @@ M2/Lecture Material/Module2_old.pdf
 
 # M3
 #M3/Lab Material/
-M3 /Lecture Material/
+#M3/Lecture Material/
 
 # M4
 #M4/Lab Material/
-M4/Lecture Material/
+# M4/Lecture Material/
 M4/Lab Material/rag_semantic_chunking_faiss_azure_eval_RBAC_prompted.py
 
 
