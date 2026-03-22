@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hackathon Handout: Front Agent + Agentic RAG (Text-Only)</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#121a33;
+      --ink:#e9ecf7;
+      --muted:#b8c0dd;
+      --accent:#7aa2ff;
+      --accent2:#66e3c4;
+      --warn:#ffd479;
+      --line:#273055;
+      --code:#0e1630;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 20% 0%, #131c3a 0%, var(--bg) 60%);
+      color:var(--ink);
+      line-height:1.55;
+    }
+    .wrap{max-width:980px; margin:0 auto; padding:32px 18px 56px}
+    header{
+      padding:24px 22px;
+      background: linear-gradient(135deg, rgba(122,162,255,.18), rgba(102,227,196,.12));
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow: 0 10px 35px rgba(0,0,0,.25);
+    }
+    h1{margin:0 0 8px; font-size:28px; letter-spacing:.2px}
+    header p{margin:0; color:var(--muted); max-width:78ch}
+    .badge{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:6px 10px; border-radius:999px;
+      background:rgba(122,162,255,.12);
+      border:1px solid rgba(122,162,255,.35);
+      color:var(--ink);
+      font-size:13px;
+      margin:12px 8px 0 0;
+      user-select:none;
+    }
+    main{margin-top:18px}
+    section{
+      background: rgba(18,26,51,.86);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px 18px;
+      margin:14px 0;
+      box-shadow: 0 8px 26px rgba(0,0,0,.18);
+    }
+    h2{margin:0 0 10px; font-size:20px}
+    h3{margin:16px 0 8px; font-size:16px; color:var(--ink)}
+    p{margin:8px 0; color:var(--ink)}
+    ul{margin:8px 0 0 18px; color:var(--ink)}
+    li{margin:6px 0}
+    .muted{color:var(--muted)}
+    .diagram{
+      padding:12px 12px;
+      background:rgba(14,22,48,.92);
+      border:1px solid rgba(39,48,85,.9);
+      border-radius:14px;
+      overflow:auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      color:#dfe6ff;
+      font-size:13px;
+      white-space:pre;
+      margin:12px 0 0;
+    }
+    code, pre{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    pre{
+      margin:10px 0 0;
+      background:rgba(14,22,48,.92);
+      border:1px solid rgba(39,48,85,.9);
+      border-radius:14px;
+      padding:12px;
+      overflow:auto;
+      color:#dfe6ff;
+      font-size:13px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    @media (min-width:860px){
+      .grid{grid-template-columns: 1fr 1fr}
+    }
+    .callout{
+      border-left:4px solid var(--accent2);
+      padding:10px 12px;
+      background:rgba(102,227,196,.08);
+      border-radius:12px;
+      margin:10px 0 0;
+    }
+    .warn{
+      border-left:4px solid var(--warn);
+      background:rgba(255,212,121,.08);
+    }
+    .checklist{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media (min-width:720px){
+      .checklist{grid-template-columns: 1fr 1fr}
+    }
+    .box{
+      border:1px solid rgba(39,48,85,.9);
+      border-radius:14px;
+      padding:12px;
+      background:rgba(11,16,32,.35);
+    }
+    .box h4{margin:0 0 6px; font-size:14px; color:var(--ink)}
+    .box p{margin:0; color:var(--muted); font-size:13px}
+    .mini{font-size:13px; color:var(--muted)}
+    footer{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
+    }
+    @media print{
+      body{background:#fff; color:#111}
+      header, section{box-shadow:none}
+      header{background:#f4f6ff}
+      section{background:#fff}
+      .diagram, pre{background:#f6f7fb; color:#111}
+      .badge{color:#111; border-color:#bbb}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Hackathon Handout: Front Agent + Agentic RAG (Text-Only)</h1>
+      <p>
+        Build a chat assistant with two core parts:
+        a <strong>Front Agent</strong> (with conversation memory) that produces a <strong>Retrieval Plan</strong>,
+        and an <strong>Agentic RAG loop</strong> that can retrieve, evaluate sufficiency, refine, retrieve again (max 2 iterations),
+        and answer with citations.
+      </p>
+      <div>
+        <span class="badge">Text-only retrieval</span>
+        <span class="badge">Memory + planning</span>
+        <span class="badge">2-pass agentic loop</span>
+        <span class="badge">Citations by chunk ID</span>
+      </div>
+      <div class="diagram" aria-label="Architecture diagram">
+User → FrontAgent(memory) → AgenticRAGLoop(retrieve/eval/refine) → Answer
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <h2>What you are building</h2>
+        <p class="muted">
+          This is a practical build: simple components, clear interfaces, and a working end-to-end demo.
+          Start with text retrieval. If you want to extend later, that’s optional.
+        </p>
+
+        <div class="checklist">
+          <div class="box">
+            <h4>Front Agent</h4>
+            <p>Uses memory + user query to produce a structured Retrieval Plan.</p>
+          </div>
+          <div class="box">
+            <h4>Agentic RAG</h4>
+            <p>Retrieve → evaluate sufficiency → refine → retrieve again → synthesize with citations.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Definition of “Done” (Deliverables)</h2>
+        <div class="grid">
+          <div>
+            <h3>Must demonstrate</h3>
+            <ul>
+              <li><strong>n-turn conversation</strong> (you choose n) where memory affects the plan or the answer.</li>
+              <li>At least one query that triggers <strong>iteration 2</strong> (refined retrieval).</li>
+              <li>Final answer includes <strong>citations</strong> using retrieved chunk IDs (e.g., <code>[C2]</code> <code>[C6]</code>).</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Must submit</h3>
+            <ul>
+              <li>An entry point: <code>run_chat.py</code> (CLI) or <code>app.py</code> (simple UI).</li>
+              <li>A per-query <code>trace.json</code> that captures the plan, retrieval results, evaluator verdict, and final answer.</li>
+              <li>Readable outputs (logs or saved artifacts) suitable for explaining your system during the demo.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <strong>Constraint:</strong> cap the Agentic RAG loop to <strong>2 iterations</strong>.
+          If iteration 2 still isn’t sufficient, provide the best possible answer and clearly state limitations.
+        </div>
+      </section>
+
+      <section>
+        <h2>Component Contracts (Interfaces)</h2>
+
+        <h3>1) Memory Model (minimal and sufficient)</h3>
+        <p class="muted">
+          Keep memory lightweight: store recent turns plus a rolling summary. The goal is continuity, not perfect recall.
+        </p>
+        <pre>{
+  "history": [
+    {"role": "user", "content": "…"},
+    {"role": "assistant", "content": "…"}
+  ],
+  "summary": "Short rolling summary of the conversation so far.",
+  "facts": {
+    "optional_user_preferences": "e.g., 'keep answers brief', 'prefer bullet points'"
+  }
+}</pre>
+
+        <h3>2) Front Agent (Memory + Planning)</h3>
+        <p>
+          The Front Agent takes the user message + memory and outputs a <strong>Retrieval Plan</strong>.
+          This plan is what your RAG loop will execute.
+        </p>
+
+        <div class="grid">
+          <div>
+            <p class="mini"><strong>Inputs</strong></p>
+            <pre>{
+  "user_message": "What is the sick leave carry forward limit?",
+  "memory": { "...": "see memory model above" }
+}</pre>
+          </div>
+          <div>
+            <p class="mini"><strong>Output: RetrievalPlan</strong></p>
+            <pre>{
+  "clean_query": "sick leave carry forward limit policy",
+  "k": 8,
+  "notes": [
+    "User asked for policy limit",
+    "Prefer short answer (from memory)"
+  ]
+}</pre>
+          </div>
+        </div>
+
+        <p class="muted">
+          Planning responsibilities (minimum): rewrite the query into a searchable form, set <code>k</code>,
+          and optionally add notes that help answer formatting or retrieval focus.
+        </p>
+
+        <h3>3) Agentic RAG Loop (2-pass)</h3>
+        <p>
+          The Agentic RAG loop executes the plan, checks if context is sufficient, and refines once if needed.
+        </p>
+
+        <pre>Algorithm (max 2 iterations)
+
+Input: RetrievalPlan plan
+
+1) Retrieve context using plan.clean_query (text-only)
+2) Evaluate sufficiency:
+   - If SUFFICIENT → synthesize answer with citations → return
+   - If NOT SUFFICIENT → produce refined_query
+3) Retrieve again using refined_query
+4) Synthesize answer with citations (even if partial) → return</pre>
+      </section>
+
+      <section>
+        <h2>Evaluator: Sufficiency Check (Required Format)</h2>
+        <p>
+          The evaluator decides whether the retrieved context is enough to answer without guessing.
+          Return a small JSON object like this:
+        </p>
+
+        <pre>{
+  "sufficient": false,
+  "missing": [
+    "The specific clause that defines the carry-forward limit"
+  ],
+  "refined_query": "carry forward limit sick leave clause HR policy",
+  "confidence": 0.62
+}</pre>
+
+        <div class="callout">
+          <strong>Guideline:</strong> Make the evaluator strict enough that iteration 2 happens sometimes,
+          but not so strict that it always loops. A simple heuristic: require at least one chunk that directly states the answer.
+        </div>
+      </section>
+
+      <section>
+        <h2>Retrieval Output and Citations (Chunk IDs)</h2>
+        <p>
+          Keep citations simple and deterministic. When you retrieve chunks, assign IDs in order:
+          <code>C1..Ck</code>. Store their source metadata in the trace.
+        </p>
+
+        <h3>Sample retrieval printout (text-only)</h3>
+        <pre>Retrieved Chunks:
+[C1] (source=HR_Policy.pdf, page=3) "Sick leave may be carried forward up to 12 days..."
+[C2] (source=HR_Policy.pdf, page=2) "Eligibility: employees with 6 months tenure..."
+[C3] (source=Leave_FAQ.docx)       "Carry forward applies at year-end close..."</pre>
+
+        <h3>Sample final answer with citations</h3>
+        <pre>Answer:
+Sick leave can be carried forward up to 12 days at the end of the leave year. [C1]
+Eligibility conditions apply (e.g., tenure requirements). [C2]</pre>
+
+        <p class="muted">
+          Tip: if you rerank or dedupe, assign chunk IDs after your final selection and pass that exact ordered list to synthesis,
+          so citations remain consistent.
+        </p>
+      </section>
+
+      <section>
+        <h2>Trace and Logging (Professional Audit Trail)</h2>
+        <p>
+          Your system should produce a <code>trace.json</code> per user query.
+          This audit trail supports debugging, evaluation, and clear demonstrations.
+        </p>
+
+        <pre>{
+  "run_id": "2026-02-24T11-30-12Z_7f3a",
+  "user_message": "What is the sick leave carry forward limit?",
+  "memory_summary_before": "User is asking about leave policies; prefers concise answers.",
+  "retrieval_plan": {
+    "clean_query": "sick leave carry forward limit policy",
+    "k": 8,
+    "notes": ["Prefer concise"]
+  },
+  "iteration_1": {
+    "query": "sick leave carry forward limit policy",
+    "retrieved": [
+      {"chunk_id": "C1", "source": "HR_Policy.pdf", "page": 3},
+      {"chunk_id": "C2", "source": "HR_Policy.pdf", "page": 2}
+    ],
+    "evaluator": {
+      "sufficient": true,
+      "missing": [],
+      "refined_query": null,
+      "confidence": 0.81
+    }
+  },
+  "iteration_2": null,
+  "final_answer": "Sick leave can be carried forward up to 12 days... [C1]",
+  "citations_used": ["C1", "C2"]
+}</pre>
+
+        <div class="callout">
+          <strong>Minimum requirement:</strong> include the plan, evaluator verdict, and citation mapping.
+          Additional fields are optional.
+        </div>
+      </section>
+
+      <section>
+        <h2>Required Test Prompts (Run These)</h2>
+        <p class="muted">
+          These prompts exercise memory, retrieval, and the 2-pass loop. Adapt them to your corpus.
+        </p>
+
+        <ul>
+          <li><strong>Policy fact:</strong> “What is the sick leave carry forward limit?”</li>
+          <li><strong>Ambiguous or multi-hop:</strong> “Explain sick leave carry forward with an example.”</li>
+          <li><strong>Follow-up using memory:</strong> “Now summarize that in 2 lines.”</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Stretch Goals (Optional)</h2>
+        <ul>
+          <li><strong>Clarification path:</strong> Front Agent asks one clarifying question if the query is underspecified.</li>
+          <li><strong>Reranking:</strong> rerank retrieved chunks before synthesis (keep citations stable).</li>
+          <li><strong>UI:</strong> Streamlit/Gradio chat interface with a “Show Trace” panel.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Common Issues and Quick Fixes</h2>
+        <ul>
+          <li><strong>Evaluator always says “sufficient”</strong>: require a direct statement chunk (not just “related”).</li>
+          <li><strong>Evaluator always says “insufficient”</strong>: reduce strictness; allow partial answers with a limitation note.</li>
+          <li><strong>Refined query gets worse</strong>: merge queries (refined = original + missing terms) instead of replacing.</li>
+          <li><strong>Citations don’t match</strong>: assign chunk IDs after final selection (post-rerank) and pass that list to synthesis.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>Front Agent + Agentic RAG (Text-Only) — learner handout</p>
+    </footer>
+  </div>
+</body>
+</html>
