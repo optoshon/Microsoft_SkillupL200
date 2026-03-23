@@ -1,0 +1,28 @@
+conda create -n llm_env python=3.11 -y
+
+conda activate llm_env
+
+
+pip install --upgrade pip setuptools wheel
+
+
+pip install torch torchvision torchaudio
+
+
+pip install transformers datasets accelerate peft sentence-transformers
+
+pip install langchain==0.2.14 langchain-core==0.2.41 langchain-openai==0.1.20 langchain-community==0.2.12 langchain-experimental==0.0.34 langchain-text-splitters==0.2.0
+
+pip install openai>=1.30.0 python-dotenv requests tiktoken==0.7.0
+
+
+pip install pypdf docx2txt python-docx docling docling-core
+
+pip install rank-bm25 nltk easyocr
+
+
+pip install numpy pandas matplotlib psutil urllib3 botocore fsspec
+
+
+pip install ipykernel==6.29.5
+python -m ipykernel install --user --name llm_env --display-name "Python (llm_env)"
