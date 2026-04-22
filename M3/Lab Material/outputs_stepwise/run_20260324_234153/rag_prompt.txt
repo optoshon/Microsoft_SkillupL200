@@ -1,0 +1,41 @@
+
+Answer the question using ONLY the context below.
+If the context does not contain the answer, say:
+"I don't know based on the provided context."
+
+Context:
+[Context 1]
+4.2 Statutory Registration
+4.2.1 Employees shall be enrolled under EPF and ESI, as applicable, within 7 working days of DoJ.
+4.2.2 Delays beyond 14 days shall be escalated to the CFO and reported in the quarterly statutory compliance audit.
+
+[Context 2]
+5. Work Hours and Availability
+
+5.1 Employees shall adhere to standard working hours defined in General Work Policy (HR-POL-007), Clause 4.1.
+5.2 Core availability hours shall be 10:00 AM to 5:00 PM IST on all working days.
+5.3 Attendance shall be recorded through the approved digital attendance and productivity systems.
+
+6. Information Security and Data Protection
+
+6.1 Mandatory use of:
+
+Company-issued devices only
+
+VPN with multi-factor authentication
+
+[Context 3]
+2. Scope
+
+This policy applies to all confirmed employees of ABC Solutions Pvt. Ltd. across all grades and locations, and to their eligible dependents as defined herein. Employees covered mandatorily under the ESI Act shall primarily be governed by statutory benefits, with supplementary coverage as approved by the Chief Human Resources Officer (CHRO) and Chief Financial Officer (CFO).
+
+3. Definitions
+
+3.1
+
+Group Mediclaim Policy (GMC):
+
+Question:
+Within how many working days of the Date of Joining must an employee be enrolled under EPF and ESI?
+
+Answer:

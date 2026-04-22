@@ -1,0 +1,11 @@
+{
+  "question": "Which protected characteristics are covered under the Equal Opportunity Policy?",
+  "ground_truth": "Protected characteristics include gender, marital status, pregnancy, disability, age, religion, caste, ethnicity, sexual orientation, and other categories protected by law.",
+  "prediction": "The protected characteristics covered under the Equal Opportunity Policy are gender, sex, marital status, pregnancy, disability, age, religion, caste, ethnicity, sexual orientation, and any other category protected under applicable law.",
+  "rougeL_f1": 0.68,
+  "sources": [
+    "HR-POL-002_Equal_Opportunity_Policy.docx",
+    "HR-POL-002_Equal_Opportunity_Policy.docx",
+    "HR-POL-002_Equal_Opportunity_Policy.docx"
+  ]
+}
