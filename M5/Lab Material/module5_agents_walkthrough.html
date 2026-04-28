@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5 – From LLM Calls to Agents & Workflows</title>
+
+    <!-- Mermaid for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@9.4.3/dist/mermaid.min.js"></script>
+    <script>
+        // Ultra-safe initialization to prevent any reload loops
+        (function () {
+            if (window.mermaidInitialized) {
+                console.log('Mermaid already initialized, skipping');
+                return;
+            }
+            window.mermaidInitialized = true;
+
+            // Configure mermaid with minimal settings
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'default',
+                securityLevel: 'loose',
+                logLevel: 'error',
+                themeVariables: {
+                    primaryColor: '#0078D4',
+                    primaryTextColor: '#fff',
+                    primaryBorderColor: '#005a9e',
+                    lineColor: '#005a9e',
+                    secondaryColor: '#50E6FF',
+                    tertiaryColor: '#FFB900'
+                }
+            });
+
+            // Wait for complete page load, then render once
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', renderMermaid);
+            } else {
+                renderMermaid();
+            }
+
+            function renderMermaid() {
+                try {
+                    console.log('Rendering mermaid diagrams...');
+                    mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+                    console.log('Mermaid rendering complete');
+                } catch (e) {
+                    console.error('Mermaid error:', e);
+                }
+            }
+        })();
+    </script>
+
+    <style>
+        /* ===== BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #323130;
+            background: #ffffff;
+            padding-top: 120px;
+            /* Space for fixed nav */
+        }
+
+        /* ===== TOP NAVIGATION ===== */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #0078D4 0%, #005a9e 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        .top-nav h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.25rem 0;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .nav-links a:hover {
+            border-bottom-color: #FFB900;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 140px;
+            /* Offset for fixed nav */
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #0078D4;
+            color: #323130;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #323130;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #323130;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .lead {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            color: #605E5C;
+            margin-bottom: 2rem;
+        }
+
+        /* ===== CHIPS / TAGS ===== */
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chip {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chip-concept {
+            background: #E3F2FD;
+            color: #0078D4;
+            border: 1px solid #0078D4;
+        }
+
+        .chip-usecase {
+            background: #E8F5E9;
+            color: #107C10;
+            border: 1px solid #107C10;
+        }
+
+        .chip-sdk {
+            background: #FFF4E5;
+            color: #D83B01;
+            border: 1px solid #D83B01;
+        }
+
+        .chip-agent {
+            background: #F3E5F5;
+            color: #7B1FA2;
+            border: 1px solid #7B1FA2;
+        }
+
+        .chip-homework {
+            background: #FFF3E0;
+            color: #F57C00;
+            border: 1px solid #F57C00;
+        }
+
+        .chip-compare {
+            background: #E0F2F1;
+            color: #00796B;
+            border: 1px solid #00796B;
+        }
+
+        .chip-patterns {
+            background: #E1F5FE;
+            color: #0277BD;
+            border: 1px solid #0277BD;
+        }
+
+        .chip-hands-on {
+            background: #FCE4EC;
+            color: #C2185B;
+            border: 1px solid #C2185B;
+        }
+
+        /* ===== LAYOUT HELPERS ===== */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: #F9F9F9;
+            border: 1px solid #EDEBE9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            color: #0078D4;
+        }
+
+        .card h4 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: #323130;
+        }
+
+        .card ul {
+            margin-left: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .card li {
+            margin-bottom: 0.5rem;
+        }
+
+        .card-caption {
+            font-size: 0.9rem;
+            color: #605E5C;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+
+        /* ===== CALLOUTS ===== */
+        .callout {
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .callout-info {
+            background: #F0F6FF;
+            border-left-color: #0078D4;
+        }
+
+        .callout-info::before {
+            content: "💡 ";
+            font-size: 1.3rem;
+        }
+
+        .callout-warning {
+            background: #FFF8E1;
+            border-left-color: #FFB900;
+        }
+
+        .callout-warning::before {
+            content: "⚠️ ";
+            font-size: 1.3rem;
+        }
+
+        .callout-extension {
+            background: #F3E5F5;
+            border-left-color: #7B1FA2;
+        }
+
+        .callout-extension::before {
+            content: "🎯 ";
+            font-size: 1.3rem;
+        }
+
+        .callout-success {
+            background: #E8F5E9;
+            border-left-color: #107C10;
+        }
+
+        .callout-success::before {
+            content: "✅ ";
+            font-size: 1.3rem;
+        }
+
+        .callout h4 {
+            margin-top: 0;
+            display: inline;
+        }
+
+        /* ===== TABLES ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        th {
+            background: linear-gradient(135deg, #0078D4 0%, #005a9e 100%);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #EDEBE9;
+        }
+
+        tr:hover {
+            background: #F9F9F9;
+        }
+
+        /* ===== CODE BLOCKS ===== */
+        pre {
+            background: #1E1E1E;
+            color: #D4D4D4;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        p code,
+        li code {
+            background: #F3F2F1;
+            color: #D83B01;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* ===== MERMAID DIAGRAMS ===== */
+        .mermaid {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #EDEBE9;
+            margin: 1.5rem 0;
+        }
+
+        /* ===== SECTION-SPECIFIC STYLES ===== */
+        .section-intro h2 {
+            border-bottom-color: #0078D4;
+        }
+
+        .section-patterns h2 {
+            border-bottom-color: #0277BD;
+        }
+
+        .section-usecase h2 {
+            border-bottom-color: #107C10;
+        }
+
+        .section-workflow h2 {
+            border-bottom-color: #00796B;
+        }
+
+        .section-agentic h2 {
+            border-bottom-color: #7B1FA2;
+        }
+
+        .section-compare h2 {
+            border-bottom-color: #F57C00;
+        }
+
+        .section-homework h2 {
+            border-bottom-color: #D83B01;
+        }
+
+        .section-next h2 {
+            border-bottom-color: #0078D4;
+        }
+
+        .section-setup h2 {
+            border-bottom-color: #C2185B;
+        }
+
+        /* ===== LISTS ===== */
+        ul,
+        ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 180px;
+            }
+
+            .top-nav {
+                padding: 1rem;
+            }
+
+            .top-nav h1 {
+                font-size: 1.2rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .two-column,
+            .three-column {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th,
+            td {
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== TOP NAVIGATION ===== -->
+    <nav class="top-nav">
+        <h1>Module 5 – From LLM Calls to Agents & Workflows</h1>
+        <ul class="nav-links">
+            <li><a href="#intro">Introduction</a></li>
+            <li><a href="#patterns">Patterns & Vocabulary</a></li>
+            <li><a href="#uc1">Use Case 1</a></li>
+            <li><a href="#workflow">Workflow Solution</a></li>
+            <li><a href="#agentic">Agentic Solution</a></li>
+            <li><a href="#compare">Workflow vs Agent</a></li>
+            <li><a href="#next-steps">Next Steps</a></li>
+            <li><a href="#setup">Setup & Notebooks</a></li>
+        </ul>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <!-- ===== SECTION 1: INTRODUCTION ===== -->
+        <section id="intro" class="section-intro">
+            <h2>Module 5 – From LLM Calls to Agents & Workflows</h2>
+
+            <p class="lead">
+                In this module, we zoom out from "just calling a model" and learn how to use LLMs in the right way
+                for the right problem – as simple prompt apps, as deterministic workflows, and as agentic systems
+                that can plan, act, and self-evaluate.
+            </p>
+
+            <div class="chip-row">
+                <span class="chip chip-concept">Concepts → Patterns</span>
+                <span class="chip chip-usecase">Single Use Case</span>
+                <span class="chip chip-sdk">SDK First</span>
+                <span class="chip chip-agent">Agents & Workflows</span>
+            </div>
+
+            <div class="two-column">
+                <div>
+                    <div class="card">
+                        <h3>What this module helps you do</h3>
+                        <p>
+                            Think of LLMs as different "colleagues" you can hire:
+                            one who just answers questions, one who follows a fixed checklist,
+                            and one who can improvise, use tools, and ask for second opinions.
+                            Module 5 is about knowing <strong>which colleague to call</strong>.
+                        </p>
+                        <ul>
+                            <li>Recognise when you just need a <strong>simple prompt app</strong> vs a
+                                <strong>multi-step workflow</strong> vs an <strong>agent</strong>.
+                            </li>
+                            <li>Apply these patterns to a concrete scenario: a <strong>Proposal Assistant</strong> that
+                                drafts client-ready proposals.</li>
+                            <li>Start with a <strong>pure SDK implementation</strong>, then see how the same ideas map
+                                into <strong>LangChain</strong> as homework.</li>
+                        </ul>
+                        <p class="note">
+                            The goal is not to memorise APIs, but to build a mental model you can reuse across
+                            Azure AI, LangChain, Prompt Flow, n8n, or any other orchestration tool.
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <div class="card">
+                        <h3>Module 5 at a glance</h3>
+                        <div class="mermaid">
+                            flowchart LR
+                            A[LLM call] --> B[Chat + memory]
+                            B --> C[Prompt app]
+                            C --> D[Workflow]
+                            D --> E[Agent]
+                            E --> F[Agentic system]
+                            C -.-> G[(RAG context)]
+                            D -.-> G
+                            E -.-> G
+                        </div>
+                        <p class="card-caption">
+                            We start with basic calls, then build up to workflows and agentic systems, and show where
+                            RAG fits in.
+                            Use Case 1 (Proposal Assistant) is our running example throughout.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 2: PATTERNS & VOCABULARY ===== -->
+        <section id="patterns" class="section-patterns">
+            <h2>Patterns & Vocabulary: From Simple Calls to Agentic Systems</h2>
+
+            <div class="chip-row">
+                <span class="chip chip-patterns">LLM Usage Patterns</span>
+                <span class="chip chip-compare">Workflow vs Agent</span>
+                <span class="chip chip-concept">RAG in the Mix</span>
+            </div>
+
+            <p class="lead">
+                This section introduces the terminology you'll use for the rest of Module 5: simple LLM calls,
+                chat with memory, prompt apps, fixed workflows, agents, agentic systems, and where RAG fits
+                into all of those.
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pattern</th>
+                        <th>What it feels like</th>
+                        <th>Typical use</th>
+                        <th>Where you see it in Module 5</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>LLM call</strong></td>
+                        <td>Ask once, get one answer.</td>
+                        <td>Single-shot questions, simple text transforms, quick experiments.</td>
+                        <td>Intro notebook – basic SDK call.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Chat + memory</strong></td>
+                        <td>A running conversation where the model "remembers" what you said (because we resend it).
+                        </td>
+                        <td>Assistants, chatbots, support bots that need context from previous turns.</td>
+                        <td>Intro notebook – manual message history.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prompt app / prompt template</strong></td>
+                        <td>A reusable prompt with parameters: topic, tone, audience, etc.</td>
+                        <td>Reusable utilities like email generators, explainers, rewriters.</td>
+                        <td>Intro notebook – parameterised email generator.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Workflow / chain</strong></td>
+                        <td>A fixed checklist of steps the model follows every time.</td>
+                        <td>Multi-step transforms: outline → sections → refine; ETL-style flows.</td>
+                        <td>Use Case 1 workflow solution (pure SDK).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Agent</strong></td>
+                        <td>The model chooses which tool or step to use next based on the situation.</td>
+                        <td>Tasks where the path is not fixed: tool-using assistants, research helpers.</td>
+                        <td>Use Case 1 agentic solution (planner/drafter/evaluator loop).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Agentic system / graph</strong></td>
+                        <td>A network of specialised agents or nodes that pass work and state between them.</td>
+                        <td>Complex, long-running flows: multi-stage review, multi-team workflows, orchestration across
+                            tools and services.</td>
+                        <td>Introduced conceptually (we show where UC1 could evolve, but we don't build a full system).
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>RAG (Retrieve → Read → Respond)</strong></td>
+                        <td>The model "looks something up" before answering.</td>
+                        <td>Question-answering over documents, policy-aware assistants, knowledge bots.</td>
+                        <td>Mostly covered in earlier modules; here we show where RAG could be plugged into workflows or
+                            agents.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="mermaid">
+                flowchart LR
+                A[LLM call] --> B[Chat + memory]
+                B --> C[Prompt app]
+                C --> D[Workflow]
+                D --> E[Agent]
+                E --> F[Agentic system]
+                G[(RAG context)] -.-> D
+                G -.-> E
+                G -.-> F
+                style G fill:#E8F5E9,stroke:#107C10
+            </div>
+
+            <div class="callout callout-info">
+                <h4>Analogy: Kitchen roles vs recipes</h4>
+                <p>
+                    Think of these patterns as different ways of running a kitchen:
+                </p>
+                <ul>
+                    <li><strong>LLM call:</strong> You ask the chef one question ("How do I boil an egg?") and get one
+                        answer.</li>
+                    <li><strong>Prompt app:</strong> You have a recipe card where you fill in a few blanks (dish name,
+                        number of people, spice level).</li>
+                    <li><strong>Workflow:</strong> You follow a fixed recipe step-by-step, every time.</li>
+                    <li><strong>Agent:</strong> You trust the chef to decide what to do next – check the pantry, adjust
+                        the recipe, ask a sous-chef for help.</li>
+                    <li><strong>Agentic system:</strong> A whole kitchen brigade with multiple chefs, runners, and
+                        reviewers, all coordinating.</li>
+                    <li><strong>RAG:</strong> Giving the chef access to a well-organised pantry and cookbook shelf.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 3: USE CASE 1 - PROPOSAL ASSISTANT ===== -->
+        <section id="uc1" class="section-usecase">
+            <h2>Use Case 1 – Proposal Assistant: One Scenario, Many Patterns</h2>
+
+            <div class="chip-row">
+                <span class="chip chip-usecase">Business Scenario</span>
+                <span class="chip chip-compare">Workflow & Agent Views</span>
+                <span class="chip chip-sdk">SDK Implementation</span>
+            </div>
+
+            <p>
+                We're going to use a single, realistic scenario—a Proposal Assistant—to connect all the patterns.
+                The assistant helps create client-ready proposals for GenAI/Azure solutions based on a high-level
+                requirement or RFP-style description.
+            </p>
+
+            <div class="two-column">
+                <div class="card">
+                    <h3>What the Proposal Assistant needs to do</h3>
+                    <p>
+                        Internal teams or sales teams often need to respond quickly to GenAI opportunity requests.
+                        They have rough context and a few bullet points, but they need a structured, client-ready
+                        proposal that aligns with Azure and internal standards.
+                    </p>
+
+                    <h4>Inputs</h4>
+                    <ul>
+                        <li>High-level requirement or RFP-style text</li>
+                        <li>Optional client context (industry, region, existing systems)</li>
+                        <li>Internal constraints (must use Azure OpenAI, security/compliance notes)</li>
+                    </ul>
+
+                    <h4>Outputs</h4>
+                    <ul>
+                        <li>A structured proposal with sections like:
+                            <ul>
+                                <li>Introduction / Executive summary</li>
+                                <li>Business context & problem statement</li>
+                                <li>Proposed GenAI/Azure solution overview</li>
+                                <li>High-level architecture</li>
+                                <li>Implementation phases and rough timeline</li>
+                                <li>Risks, assumptions, and next steps</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4>Constraints</h4>
+                    <ul>
+                        <li>Should be consistent in structure across proposals</li>
+                        <li>Should be custom to the requirement, not just a generic template</li>
+                        <li>Should be easy to tweak manually after generation</li>
+                    </ul>
+
+                    <p class="note">
+                        <strong>Why this use case?</strong> Because it is familiar to many teams (responding to RFPs /
+                        proposals),
+                        and because it can be implemented with both patterns: as a simple multi-step workflow, and as an
+                        agentic pattern where the system plans, drafts, and evaluates.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3>High-level flow for the Proposal Assistant</h3>
+                    <div class="mermaid">
+                        flowchart TD
+                        A[User/Stakeholder<br />provides requirement] --> B[Understand &<br />structure requirement]
+                        B --> C[Generate outline]
+                        C --> D[Draft sections]
+                        D --> E[Review/refine]
+                        E --> F[Final proposal<br />ready for client]
+                        style F fill:#E8F5E9,stroke:#107C10
+                    </div>
+                    <p class="card-caption">
+                        This is the same use case we'll implement first as a <strong>deterministic workflow</strong>,
+                        and then as an <strong>agentic loop</strong>. The steps in this diagram are the "story" that
+                        both implementations follow.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 4: WORKFLOW SOLUTION (SDK) ===== -->
+        <section id="workflow" class="section-workflow">
+            <h2>Workflow Solution – Deterministic Pipeline with the SDK</h2>
+
+            <p>
+                A workflow is a fixed pipeline of steps that we define in code. The LLM fills in content at
+                each step, but it does not decide which step comes next. For the Proposal Assistant, we use
+                a workflow to go from requirement → outline → section drafts → final proposal in a predictable way.
+            </p>
+
+            <div class="chip-row">
+                <span class="chip chip-sdk">SDK-only Implementation</span>
+                <span class="chip chip-concept">Deterministic Workflow</span>
+                <span class="chip chip-compare">No Tool Selection</span>
+            </div>
+
+            <div class="card">
+                <h3>How the workflow solution behaves</h3>
+                <p>
+                    In the workflow approach, we treat the proposal generation process like an assembly line.
+                    Every input runs through the same ordered steps: understand the requirement, produce an outline,
+                    draft each section, then optionally refine style and tone. The code controls the sequence;
+                    the LLM focuses on filling in the content.
+                </p>
+
+                <h4>Workflow Steps</h4>
+                <ol>
+                    <li>
+                        <strong>Step 1 – Understand and structure the requirement</strong><br>
+                        Optionally clean the requirement text and highlight key objectives and constraints.
+                    </li>
+                    <li>
+                        <strong>Step 2 – Generate an outline</strong><br>
+                        Ask the model to propose a structured outline for the proposal (section headings, rough
+                        ordering).
+                    </li>
+                    <li>
+                        <strong>Step 3 – Draft each section</strong><br>
+                        For each section in the outline, call the model to generate a detailed draft, one section at a
+                        time.
+                    </li>
+                    <li>
+                        <strong>Step 4 – Refine style and tone (optional)</strong><br>
+                        Optionally run a final pass to make the proposal more concise, executive-friendly, or aligned
+                        with a chosen tone.
+                    </li>
+                    <li>
+                        <strong>Step 5 – Assemble final proposal</strong><br>
+                        Join sections into a single document that can be reviewed, edited, or directly pasted into a
+                        deck or document template.
+                    </li>
+                </ol>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>What happens</th>
+                        <th>Input</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Requirement intake & normalisation</strong></td>
+                        <td>We capture the requirement text and optionally clean or lightly rephrase it.</td>
+                        <td>Raw requirement / RFP text from the team.</td>
+                        <td>Normalised requirement text used in later prompts.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Generate outline</strong></td>
+                        <td>The model proposes a structured outline for the proposal (section headings and order).</td>
+                        <td>Normalised requirement text.</td>
+                        <td>Outline with sections like Intro, Context, Solution, Architecture, Phases, Risks.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Draft sections</strong></td>
+                        <td>We iterate over the outline and ask the model to draft each section.</td>
+                        <td>Requirement text + outline (and current section name).</td>
+                        <td>Draft text for each proposal section.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Refine style & tone</strong></td>
+                        <td>Run a final pass to adjust tone (e.g., executive summary style, concise, formal).</td>
+                        <td>Full draft proposal text.</td>
+                        <td>Refined proposal with consistent voice and tone.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Assemble & handoff</strong></td>
+                        <td>Join all sections, apply any lightweight formatting, and hand over for human review.</td>
+                        <td>Refined sections and proposal text.</td>
+                        <td>Client-ready draft proposal to be reviewed/edited by a human.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout callout-info">
+                <h4>When to start with a workflow first</h4>
+                <p>
+                    For many real projects, starting with a simple workflow is the safest choice:
+                </p>
+                <ul>
+                    <li>Your overall process is already well understood (e.g., you know the standard sections in every
+                        proposal)</li>
+                    <li>You need predictable token cost and latency per request</li>
+                    <li>You want the orchestration logic to stay simple and debuggable (each step can be logged and
+                        tested separately)</li>
+                    <li>You are comfortable asking humans to do the final quality check on the output</li>
+                    <li>You might add agentic behaviour later, but you don't want to start there</li>
+                </ul>
+                <p>
+                    This same workflow will be extended in the next section into an <strong>agentic variant</strong>
+                    for scenarios where we want the system to plan and self-evaluate.
+                </p>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 5: AGENTIC SOLUTION (SDK) ===== -->
+        <section id="agentic" class="section-agentic">
+            <h2>Agentic Solution – Planner, Drafter, Evaluator Loop</h2>
+
+            <p>
+                In the agentic version of the Proposal Assistant, we keep the same overall goal but give the
+                system more responsibility. Instead of a fixed pipeline, we split the work into roles (planner,
+                drafter, evaluator) and let the model's evaluation decide whether to stop or iterate. The control
+                flow becomes dynamic: the assistant can generate, critique, and refine proposals.
+            </p>
+
+            <div class="chip-row">
+                <span class="chip chip-agent">Agentic Behaviour</span>
+                <span class="chip chip-concept">Planner / Drafter / Evaluator</span>
+                <span class="chip chip-compare">Dynamic Control Flow</span>
+            </div>
+
+            <div class="card">
+                <h3>Three roles in the agentic proposal assistant</h3>
+                <p>
+                    To make the Proposal Assistant more self-directed, we break the work into three specialised roles.
+                    Each role uses the LLM differently and passes its output to the next one. Together, they behave
+                    like a tiny team: one plans, one drafts, one reviews.
+                </p>
+
+                <h4>Planner agent</h4>
+                <ul>
+                    <li>Reads the requirement and extracts key goals, constraints, and scope</li>
+                    <li>Proposes a structured plan or outline for the proposal: sections, ordering, and what each part
+                        should cover</li>
+                    <li>Ensures the outline reflects both business outcomes and technical expectations (e.g., Azure,
+                        GenAI, security)</li>
+                </ul>
+
+                <h4>Drafter agent</h4>
+                <ul>
+                    <li>Takes the requirement and the planner's outline</li>
+                    <li>Generates a full proposal draft, section by section, following the plan</li>
+                    <li>Aims for clarity, enough detail for discussion, and alignment with the defined structure</li>
+                </ul>
+
+                <h4>Evaluator agent (LLM-as-judge)</h4>
+                <ul>
+                    <li>Reads the requirement and the current draft proposal</li>
+                    <li>Scores the draft along dimensions like relevance, structure, technical soundness, and tone</li>
+                    <li>Returns a score and specific feedback: what to improve, what is missing, what is confusing</li>
+                </ul>
+
+                <p>
+                    An orchestrator function glues these roles together, deciding whether to accept the draft or
+                    loop back and ask the drafter to try again using the evaluator's feedback.
+                </p>
+            </div>
+
+            <div class="mermaid">
+                flowchart TD
+                A[User Requirement] --> B[Planner]
+                B --> C[Drafter]
+                C --> D[Evaluator]
+                D -->|Score too low<br />Needs revision| C
+                D -->|Score good enough<br />Approved| E[Final Proposal]
+                style E fill:#E8F5E9,stroke:#107C10
+                style D fill:#FFF8E1,stroke:#FFB900
+            </div>
+            <p class="card-caption">
+                The evaluator's score and feedback control whether the loop repeats, which is what makes this
+                more "agentic" than the fixed workflow in the previous section.
+            </p>
+
+            <div class="callout callout-warning">
+                <h4>Trade-offs of the agentic approach</h4>
+                <ul>
+                    <li>You can often get <strong>higher quality</strong> or more robust proposals by allowing iteration
+                        and self-evaluation</li>
+                    <li>But you also pay more in <strong>tokens and latency</strong>, because you may generate multiple
+                        drafts and evaluations</li>
+                    <li>Debugging is more complex: you need to inspect planner outputs, drafts, and evaluations to
+                        understand what went wrong</li>
+                    <li>It can be harder to guarantee strict determinism: the loop depends on model-generated scores and
+                        feedback</li>
+                    <li>For many teams, a good strategy is to <strong>start with a simple workflow</strong>, then
+                        introduce agentic elements only where they clearly add value (e.g., critical proposals or
+                        complex deals)</li>
+                </ul>
+            </div>
+
+            <p>
+                Next, we'll put the workflow and agentic solutions side by side and discuss when to choose one over the
+                other.
+            </p>
+        </section>
+
+        <!-- ===== SECTION 6: WORKFLOW VS AGENT ===== -->
+        <section id="compare" class="section-compare">
+            <h2>Workflow vs Agent – How to Choose</h2>
+
+            <p>
+                We've seen the Proposal Assistant implemented both as a deterministic workflow and as an agentic
+                loop with planner, drafter, and evaluator. This section summarises the trade-offs and gives you
+                a simple way to think about which pattern to start with in your own projects.
+            </p>
+
+            <div class="chip-row">
+                <span class="chip chip-compare">Pattern Comparison</span>
+                <span class="chip chip-concept">Trade-offs</span>
+                <span class="chip chip-patterns">Decision Hints</span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Workflow-first</th>
+                        <th>Agent / Hybrid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Process & orchestration</strong></td>
+                        <td>Orchestration is defined entirely in code: the steps and order are fixed.</td>
+                        <td>The model's outputs (e.g., evaluation scores) influence control flow and iteration.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>When steps are known</strong></td>
+                        <td>Ideal when you already know the sequence and structure of steps (like a standard proposal
+                            template).</td>
+                        <td>Useful when the path can vary by case, or you want the system to decide what to do next.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cost & latency</strong></td>
+                        <td>More predictable token usage and latency; easy to estimate per run.</td>
+                        <td>Often higher and more variable, because of multiple drafts and evaluations.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Correctness & quality</strong></td>
+                        <td>Quality depends mostly on good prompts per step and human review.</td>
+                        <td>Can improve quality through self-evaluation and iterative refinement, at the cost of more
+                            complexity.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Debuggability</strong></td>
+                        <td>Easier to trace: log each step, inspect intermediate outputs.</td>
+                        <td>More moving parts: need to inspect plan, drafts, evaluations, and loop decisions.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Implementation complexity</strong></td>
+                        <td>Simple to implement and maintain; good baseline for most teams.</td>
+                        <td>More complex orchestration, more prompts to manage, more to explain to stakeholders.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Good starting point?</strong></td>
+                        <td>Great default starting point for new use cases.</td>
+                        <td>Best reserved for high-value or complex scenarios where extra quality justifies extra cost.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>How it appears in Module 5</strong></td>
+                        <td>Used in the reference solution as the first, simpler implementation of the Proposal
+                            Assistant.</td>
+                        <td>Built on top of the same use case with planner/drafter/evaluator and a scoring loop.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout callout-info">
+                <h4>A quick way to think about the choice</h4>
+                <p>
+                    Instead of a strict formula, you can ask yourself a few questions on a 1–5 scale and see where you
+                    land:
+                </p>
+                <ul>
+                    <li>
+                        <strong>How critical is correctness for this use case?</strong><br>
+                        1 = "rough ideas are fine, human will fully rewrite" | 5 = "mistakes are very costly or
+                        embarrassing"
+                    </li>
+                    <li>
+                        <strong>How dynamic is the path to the answer?</strong><br>
+                        1 = "we always follow the same steps" | 5 = "steps change a lot depending on the situation"
+                    </li>
+                    <li>
+                        <strong>How tightly do we need to control cost and latency?</strong><br>
+                        1 = "we can afford multiple iterations" | 5 = "we have strict limits per request"
+                    </li>
+                    <li>
+                        <strong>How much implementation complexity can the team handle today?</strong><br>
+                        1 = "keep it dead simple" | 5 = "we're comfortable with more moving parts"
+                    </li>
+                </ul>
+                <p>
+                    <strong>Rule of thumb:</strong> If correctness and dynamism scores are low, start with a workflow.
+                    If both are high and you can tolerate cost/complexity, consider adding agentic elements (like a
+                    planner/evaluator loop). You can always start with a workflow and gradually "upgrade" to a hybrid
+                    approach where it makes sense.
+                </p>
+            </div>
+
+            <p>
+            </p>
+        </section>
+
+
+        <!-- ===== SECTION 8: NEXT STEPS & LEARNING PATHS ===== -->
+        <section id="next-steps" class="section-next">
+            <h2>Next Steps & Learning Paths</h2>
+
+            <p>
+                Different people will use Module 5 differently. This section suggests a few learning paths
+                depending on whether you're more hands-on with code, more focused on architecture, or more
+                focused on evaluation and business impact.
+            </p>
+
+            <div class="chip-row">
+                <span class="chip chip-concept">Choose Your Path</span>
+                <span class="chip chip-hands-on">Role-based Guidance</span>
+                <span class="chip chip-patterns">Beyond This Module</span>
+            </div>
+
+            <div class="three-column">
+                <div class="card">
+                    <h3>If you're a hands-on developer…</h3>
+                    <p>You like to learn by building, running, and tweaking code.</p>
+                    <ul>
+                        <li>Make sure you can run:
+                            <ul>
+                                <li>The intro notebook (Module 5 patterns)</li>
+                                <li>The Proposal Assistant workflow solution (SDK)</li>
+                                <li>The agentic solution (SDK)</li>
+                            </ul>
+                        </li>
+                        <li>Complete the LangChain conversion homework notebook, at least for:
+                            <ul>
+                                <li>Outline generation</li>
+                                <li>Section drafting</li>
+                            </ul>
+                        </li>
+                        <li>Pick one internal use case from your team and sketch:
+                            <ul>
+                                <li>A simple workflow implementation</li>
+                                <li>A possible agentic extension (e.g., add an evaluator loop)</li>
+                            </ul>
+                        </li>
+                        <li>Experiment with adding:
+                            <ul>
+                                <li>A small RAG step (e.g., pulling from a tiny document set)</li>
+                                <li>Or an extra tool (like a calculator or a knowledge lookup) in your agentic variant
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>If you're an architect or tech lead…</h3>
+                    <p>You care about patterns, governance, and making good choices across many projects.</p>
+                    <ul>
+                        <li>Use the Proposal Assistant as a template for:
+                            <ul>
+                                <li>How to document inputs, outputs, and constraints</li>
+                                <li>How to express a workflow vs an agentic design for the same problem</li>
+                            </ul>
+                        </li>
+                        <li>For 2–3 real use cases in your organisation:
+                            <ul>
+                                <li>Sketch the workflow view (fixed steps)</li>
+                                <li>Sketch the agentic view (where planner/evaluator roles might sit)</li>
+                                <li>Decide where you would start (workflow vs agent vs hybrid) and why</li>
+                            </ul>
+                        </li>
+                        <li>Define a small internal checklist:
+                            <ul>
+                                <li>Questions to ask when choosing between workflow and agent (correctness, cost,
+                                    complexity, etc.)</li>
+                            </ul>
+                        </li>
+                        <li>Work with devs to:
+                            <ul>
+                                <li>Standardise patterns (e.g., "most use cases start as workflows, we add evaluators
+                                    only in these conditions")</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>If you're a PM, evaluator, or business owner…</h3>
+                    <p>You care about impact, safety, and how to evaluate these systems.</p>
+                    <ul>
+                        <li>Focus on understanding:
+                            <ul>
+                                <li>What a workflow is vs an agent</li>
+                                <li>Where human review fits into each</li>
+                            </ul>
+                        </li>
+                        <li>For your own use cases, ask:
+                            <ul>
+                                <li>"What does a 'good enough' answer look like?"</li>
+                                <li>"Where is human oversight mandatory?"</li>
+                            </ul>
+                        </li>
+                        <li>Collaborate with a dev/architect to:
+                            <ul>
+                                <li>Define evaluation criteria for proposals (relevance, structure, tone, risk coverage)
+                                </li>
+                                <li>Decide whether an extra evaluator loop is worth the extra cost/latency</li>
+                            </ul>
+                        </li>
+                        <li>Use the Proposal Assistant examples as:
+                            <ul>
+                                <li>A template for how to describe requirements and outputs</li>
+                                <li>A starting point for writing acceptance criteria for other GenAI features</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <p>
+                You don't have to do everything at once. Pick the path that fits your role, and focus on
+                internalising the patterns. Frameworks and tools will change; the way you think about workflows,
+                agents, and evaluation will remain useful.
+            </p>
+        </section>
+
+        <!-- ===== SECTION 9: SETUP & NOTEBOOKS MAP ===== -->
+        <section id="setup" class="section-setup">
+            <h2>How Today's Notebooks Fit Together</h2>
+
+            <p>
+                This section gives you a quick map of the Module 5 notebooks: what each one focuses on, and in
+                which order to use them. Think of it as the "table of contents" for your hands-on session.
+            </p>
+
+            <div class="chip-row">
+                <span class="chip chip-hands-on">Hands-on Map</span>
+                <span class="chip chip-concept">Execution Order</span>
+                <span class="chip chip-sdk">Setup Notes</span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Notebook</th>
+                        <th>What it focuses on</th>
+                        <th>When to use it</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>M5_Intro_Agents_and_Patterns.ipynb</code></td>
+                        <td>Core concepts and patterns: LLM call, chat + memory, prompt app, workflow, agent, agentic
+                            system, and where RAG fits.</td>
+                        <td>At the start of the module, to build shared vocabulary and see small, focused examples.</td>
+                    </tr>
+                    <tr>
+                        <td><code>M5_UC1_Proposal_Workspace.ipynb</code></td>
+                        <td>Understanding the Proposal Assistant use case, capturing requirements, choosing an
+                            architecture (workflow vs agent), and designing steps/roles/evaluation.</td>
+                        <td>After the intro. Use it to think, sketch, and plan your own solution before looking at any
+                            reference code.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Recommended Flow</h3>
+            <ul>
+                <li>1️⃣ Start with: <code>M5_Intro_Agents_and_Patterns.ipynb</code></li>
+                <li>2️⃣ Then: <code>M5_UC1_Proposal_Workspace.ipynb</code></li>
+            </ul>
+            <p>
+            </p>
+
+            <div class="callout callout-info">
+                <h4>Environment & setup reminders for Module 5</h4>
+                <ul>
+                    <li>You will need access to an Azure/OpenAI endpoint and a valid API key configured in the
+                        .env file (or similar)
+                    </li>
+                    <li>Make sure your environment can import the required SDK packages used in the notebooks (for
+                        example, the OpenAI/Azure client libraries used earlier in the training)</li>
+                    <li>Before running the notebooks, run the config validation cell to confirm
+                        that endpoints, keys, and model names are set correctly</li>
+                    <li>Do not hardcode secrets in notebooks; keep credentials in config files or environment variables
+                        as per your organisation's guidelines</li>
+                </ul>
+            </div>
+
+            <p>
+                With this map in hand, you can move through Module 5 at your own pace, focusing on the patterns
+                first and the tooling second.
+            </p>
+        </section>
+
+    </main>
+</body>
+
+</html>
