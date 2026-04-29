@@ -20,13 +20,13 @@ import os
 # Azure AI Foundry inference endpoint (should end with "/models")
 INFERENCE_ENDPOINT = os.getenv(
     "AZURE_INFERENCE_ENDPOINT", 
-    "https://srika-mkndeeu4-eastus2.openai.azure.com/"
+    "https://    "
 )
 
 # API key from Azure AI Foundry
 API_KEY = os.getenv(
     "AZURE_API_KEY",
-    "FQxFqow6fCaAPGa0DwBQGX8mwEhewKgtIMMziROqlfIC3PA6qpm6JQQJ99CAACHYHv6XJ3w3AAAAACOGub6I"
+    ""
 )
 
 # Model deployment name (e.g., "gpt-4o-mini", "gpt-35-turbo")
